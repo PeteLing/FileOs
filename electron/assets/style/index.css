@@ -1,0 +1,26 @@
+body {
+    background: url(../images/img0.jpg) no-repeat;
+    background-size: 1000px 800px;
+    margin: 0;
+    padding: 0;
+}
+
+#nav {
+    position: absolute;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    min-width: 993px;
+}
+
+#nav ul {
+    list-style: none;
+    float: left;
+    margin: 5px 0;
+    padding: 0;
+}
+
+#nav li {
+    display: inline;
+    margin-left: 20px;
+    cursor: pointer;
+}

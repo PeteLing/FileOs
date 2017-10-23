@@ -2,9 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Electron</title>
+    <title>File OS</title>
+    <link href="./assets/style/index.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
-<h1>Hello World!</h1>
+    <div id='win-menu'>
+
+    </div>
+    <div id="nav">
+        <ul>
+            <li id='winbt'><img src="./assets/images/win.png" /></li>
+            <li id='filebt'><img src="./assets/images/file.png" /></li>
+            <li id='cmdbt'><img src="./assets/images/terminal.png" /></li>
+        </ul>
+    </div>
 </body>
+
+<script>
+    // You can also require other files to run in this process
+    require('./assets/scripts/index.js')
+</script>
 </html>
