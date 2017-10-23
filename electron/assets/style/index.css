@@ -6,6 +6,7 @@ body {
 }
 
 #nav {
+    z-index: 1000;
     position: absolute;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
@@ -33,9 +34,9 @@ body {
     width: 240px;
     overflow: hidden;
     padding-left:10px;
-    z-index: 1000;
+    z-index: 999;
     overflow-y: hidden;
-    transition: bottom 0.5s ;
+    transition: bottom 0.3s;
 }
 
 .warp {
