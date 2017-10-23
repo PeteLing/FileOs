@@ -30,8 +30,8 @@ body {
     position: fixed;
     bottom: 46px;
     background-color: rgba(19,23,28,0.81);
-    /* height: 60%; */
-    width: 240px;
+    height: 400px;
+    /* width: 640px; */
     overflow: hidden;
     padding-left:10px;
     z-index: 999;
@@ -59,8 +59,30 @@ body {
     height: 16px;
 }
 
+#win-menu .blocks {
+    float: right;
+    width: 400px;;
+    padding:0 10px;
+    padding-top: 5px;
+    font-size: 12px;
+    height: 100%;
+    -webkit-animation-duration: 0.5s;
+    animation-duration: 0.5s;
+}
+
+#win-menu .blocks .title,.content {
+    color: white;
+    margin: 1px 0;
+    line-height: 40px;
+    padding: 0 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 #win-menu .list{
-    width:240px;
+    float: left;
+    /* height: 400px; */
+    width:200px;
     padding:0 10px;
     padding-top: 5px;
     font-size: 12px;
