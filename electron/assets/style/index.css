@@ -24,3 +24,64 @@ body {
     margin-left: 20px;
     cursor: pointer;
 }
+
+#win-menu {
+    position: fixed;
+    bottom: 46px;
+    background-color: rgba(19,23,28,0.81);
+    /* height: 60%; */
+    width: 240px;
+    overflow: hidden;
+    padding-left:10px;
+    z-index: 1000;
+    overflow-y: hidden;
+    transition: bottom 0.5s ;
+}
+
+.warp {
+    background-color: rgba(19,23,248,0);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+#win-menu.hidden {
+    bottom:-70%;
+}
+
+#win-menu .icon {
+    position: relative;
+    top: 3px;
+    left: -4px;
+    width: 16px;
+    height: 16px;
+}
+
+#win-menu .list{
+    width:240px;
+    padding:0 10px;
+    padding-top: 5px;
+    font-size: 12px;
+    height: 100%;
+    -webkit-animation-duration: 0.5s;
+    animation-duration: 0.5s;
+}
+
+#win-menu .list .item{
+    color:white;
+    margin: 1px 0;
+    line-height: 40px;
+    padding: 0 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    transition: background-color 0.3s;
+    position: relative;
+    width: calc(100% - 20px);
+}
+
+
+#win-menu .list .item:hover,.sub-item:hover{
+    background-color: rgba(72,72,72,0.58);
+    cursor: pointer;
+}
