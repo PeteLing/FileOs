@@ -108,3 +108,68 @@ body {
     background-color: rgba(72,72,72,0.58);
     cursor: pointer;
 }
+
+#file-system {
+    border: 1px solid greenyellow;
+    width: 800px;
+    height: 600px;
+}
+
+#file-system .window-icon {
+    width: 16px;
+    height: 16px;
+    position: relative;
+    top: 2px;
+    left: 2px;
+}
+
+#file-system .window-head {
+    background: white;
+    padding: 10px;
+}
+
+#file-system .window-head ul {
+    list-style: none;
+    float: right;
+    margin: 0;
+    padding: 0;
+}
+
+#file-system .window-head li {
+    display: inline;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+#file-system .path-nav {
+    height: 30px;
+    background: lightgray;
+}
+
+#file-system .path-nav ul {
+    list-style: none;
+    float: left;
+    margin: 0;
+    padding: 0;
+    padding-top: 1%;
+}
+
+#file-system .path-nav li {
+    display: inline;
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+#file-system .path-nav .pathwithicon {
+    padding-top: 1%;
+    margin-left: 57px;
+    background: white;
+    border: 1px solid lightgray;
+}
+
+#file-system .path-nav .pathwithicon img {
+    float: left;
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+}
