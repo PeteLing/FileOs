@@ -42,6 +42,8 @@ body {
 .warp {
     background-color: rgba(19,23,248,0);
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     display: none;
@@ -70,7 +72,7 @@ body {
     animation-duration: 0.5s;
 }
 
-#win-menu .blocks .title,.content {
+#win-menu .blocks .title,#win-menu .blocks .content {
     color: white;
     margin: 1px 0;
     line-height: 40px;
@@ -113,6 +115,7 @@ body {
     border: 1px solid greenyellow;
     width: 800px;
     height: 600px;
+    position: relative;
 }
 
 #file-system .window-icon {
@@ -172,4 +175,17 @@ body {
     width: 16px;
     height: 16px;
     margin-right: 5px;
+}
+
+#file-system .canvas {
+    background: white;
+    width: 100%;
+    height: calc(100% - 70px);
+    overflow: auto;
+}
+
+#file-system .tree {
+    border-right: 1px solid lightgray;
+    width: 25%;
+    height: 100%;
 }
