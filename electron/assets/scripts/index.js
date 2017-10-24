@@ -19,14 +19,52 @@ warp.onclick = function () {
 
 var filebt = document.getElementById('filebt');
 filebt.onclick = function () {
-
+    var fs = document.getElementById('file-system');
+    if (fs.style.display == 'none') {
+        fs.style.display = 'block';
+    } else {
+        fs.style.display = 'none';
+    }
 }
 var cmdbt = document.getElementById('cmdbt');
 cmdbt.onclick = function() {
 
 }
 
+//文件系统
+var minbt = document.getElementById('file-system').getElementsByClassName('minbt')[0];
+minbt.onclick = function () { min('file-system')}
+
+var maxbt = document.getElementById('file-system').getElementsByClassName('maxbt')[0];
+maxbt.onclick = function () { max('file-system') };
+
+var closebt = document.getElementById('file-system').getElementsByClassName('closebt')[0];
+closebt.onclick = function () { closewindow('file-system'); }
+
+
+//最小化
+function min(id) {
+    var obj = document.getElementById(id);
+    if (obj.style.display == 'none') {
+        obj.style.display = 'block';
+    } else {
+        obj.style.display = 'none';
+    }
+}
+//最大化
+function fullscreen(id) {
+
+}
+
+//关闭
+function closewindow(id) {
+    min(id);
+}
+
+
+
 window.onload = function () {
+
 
     function DragDiv(event, id) {
         var adiv = document.getElementById(id);

@@ -116,6 +116,7 @@ body {
     width: 800px;
     height: 600px;
     position: relative;
+    display: none;
 }
 
 #file-system .window-icon {
@@ -181,11 +182,21 @@ body {
     background: white;
     width: 100%;
     height: calc(100% - 70px);
-    overflow: auto;
+    /* overflow: auto; */
 }
 
 #file-system .tree {
     border-right: 1px solid lightgray;
+    float: left;
     width: 25%;
     height: 100%;
+    overflow: auto;
+}
+
+#file-system .content {
+    float: right;
+    border-right: 1px solid lightgray;
+    width: 74%;
+    height: 100%;
+    overflow: auto;
 }

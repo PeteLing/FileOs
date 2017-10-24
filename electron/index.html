@@ -7,14 +7,14 @@
 </head>
 <body>
 
-    <div id="file-system" style="top:10px; left:10px;">
+    <div id="file-system" style="top:10px; left:10px;display:none;">
         <div class="window-head">
             <img class="window-icon" src="./assets/images/file.png" />
             文件管理
             <ul>
-                <li><img src="./assets/images/min.png" /></li>
-                <li><img src="./assets/images/full-screen.png" /></li>
-                <li><img src="./assets/images/close.png" /></li>
+                <li><img class="minbt" src="./assets/images/min.png" /></li>
+                <li><img class="maxbt" src="./assets/images/full-screen.png" /></li>
+                <li><img class="closebt" src="./assets/images/close.png" /></li>
             </ul>
         </div>
         <div class='path-nav'>
@@ -29,10 +29,12 @@
         </div>
         <div class="canvas">
             <div class="tree">
-
+                <ul>
+                    <li></li>
+                </ul>
             </div>
             <div class="content">
-                
+
             </div>
         </div>
     </div>
