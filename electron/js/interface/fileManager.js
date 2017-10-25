@@ -16,4 +16,7 @@ const dirStru = new DirStruClass();
 const disk = new DiskClass();
 
 
+const newFile = function () {
+    file = new FileClass()
 
+};

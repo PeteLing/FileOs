@@ -55,3 +55,7 @@ ipcMain.on('shutdown', ()=>{
   app.quit();
 });
 
+
+ipcMain.on('newFileManagerWindow', ()=>{
+
+});
