@@ -56,6 +56,30 @@ ipcMain.on('shutdown', ()=>{
 });
 
 
-ipcMain.on('newFileManagerWindow', ()=>{
+let file_manager = null;
+ipcMain.on('file_manager', ()=>{
+  file_manager = new BrowserWindow({
+      width:100,
+      height:100,
+      show:true
+  });
+    file_manager.loadURL(url.format({
+        pathname: path.join(__dirname, '../fileManager.html'),
+        protocol: 'file:',
+        slashes: true
+    }));
+});
 
+let edit_file = null;
+ipcMain.on('edit_file', ()=>{
+  edit_file = new BrowserWindow({
+      width:800,
+      height:800,
+      show:true
+  });
+    file_manager.loadURL(url.format({
+        pathname: path.join(__dirname, '../editFile.html'),
+        protocol: 'file:',
+        slashes: true
+    }));
 });
