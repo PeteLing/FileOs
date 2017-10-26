@@ -252,3 +252,27 @@ body {
     border: 0;
     padding: 0;
 }
+
+#terminal .content {
+    background: black;
+    color: white;
+    width: 100%;
+    height: calc(100% - 40px);
+    overflow-y: auto;
+}
+
+#terminal .pc-name {
+    color: green;
+}
+
+#terminal .path {
+    color: yellow;
+}
+
+#terminal .command {
+    width: 96%;
+    border: none;
+    BACKGROUND-COLOR: transparent;
+    outline: none;
+    color:white;
+}

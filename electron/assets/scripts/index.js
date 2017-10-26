@@ -100,3 +100,16 @@ for(var i = 0 ; i < oa.length;i++){
     })()
     
 }
+
+//终端回车处理
+document.getElementById('terminal').onkeydown=keyDownQuery; 
+function keyDownQuery(e) {  
+    // 兼容FF和IE和Opera  
+    var theEvent = e || window.event;  
+    var code = theEvent.keyCode || theEvent.which || theEvent.charCode;  
+    if (code == 13) {   
+        console.log('enter');
+        return false;  
+    }  
+    return true;  
+} 
