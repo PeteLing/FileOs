@@ -7,8 +7,8 @@
 </head>
 <body>
 
-    <div id="file-system" style="top:10px; left:10px;display:none;">
-        <div class="window-head" draggable="true" style="top:10px; left:10px;">
+    <div id="file-system" class='windows' style="top:10px; left:10px;display:none;">
+        <div class="window-head" draggable="true">
             <img class="window-icon" src="./assets/images/file.png" />
             文件管理
             <ul>
@@ -85,8 +85,24 @@
         </div>
     </div>
 
-    <div id="edit">
-        
+    <div id="edit" class='windows' style="top:10px; left:10px;">
+        <div class="window-head" draggable="true">
+            <img class="window-icon" src="./assets/images/TXT.png" />
+            文件管理
+            <ul>
+                <li><img class="minbt" src="./assets/images/min.png" /></li>
+                <li><img class="maxbt" src="./assets/images/full-screen.png" /></li>
+                <li><img class="closebt" src="./assets/images/close.png" /></li>
+            </ul>
+        </div>
+        <div class='nav'>
+            <ul>
+                <li>保存</li>
+            </ul>
+        </div>
+        <div class="content">
+            <textarea></textarea>
+        </div>
     </div>
 
     <div id="terminal">

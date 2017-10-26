@@ -112,15 +112,22 @@ body {
     cursor: pointer;
 }
 
-#file-system {
+.windows {
     border: 1px solid greenyellow;
     width: 800px;
     height: 600px;
-    position: relative;
+    position: fixed;
+}
+
+#file-system {
+    /* border: 1px solid greenyellow; */
+    /* width: 800px; */
+    /* height: 600px; */
+    /* position: relative; */
     display: none;
 }
 
-#file-system .window-icon {
+.window-icon {
     width: 16px;
     height: 16px;
     position: relative;
@@ -128,19 +135,30 @@ body {
     left: 2px;
 }
 
-#file-system .window-head {
+.window-head {
     background: white;
     padding: 10px;
 }
 
-#file-system .window-head ul {
+#edit .nav {
+    background: lightgray;
+    padding: 8px;
+    height: 13px;
+}
+
+.window-head ul, #edit .nav ul {
     list-style: none;
     float: right;
     margin: 0;
     padding: 0;
 }
 
-#file-system .window-head li {
+#edit .nav ul {
+    float: left !important;
+    font-size: 13px;
+}
+
+.window-head li, #edit .nav li{
     display: inline;
     margin-left: 5px;
     cursor: pointer;
@@ -220,4 +238,17 @@ body {
     text-overflow:ellipsis; 
     overflow:hidden;
     text-align: center;
+}
+
+#edit .content{
+    width: 100%;
+    height: calc(100% - 69px);
+    background: white;
+}
+
+#edit .content textarea {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 0;
 }

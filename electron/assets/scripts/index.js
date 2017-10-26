@@ -86,7 +86,6 @@ for(var i = 0 ; i < oa.length;i++){
                 var left = parseInt(ob.style.left);
                 var top = parseInt(ob.style.top);
     
-    
                 ob.style.left = left + minusX + 'px'; 
                 ob.style.top = top + minusY + 'px';
     
