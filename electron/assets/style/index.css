@@ -201,3 +201,23 @@ body {
     height: 100%;
     overflow: auto;
 }
+
+#file-system article {
+    margin: 8px;
+    width: 13%;
+    text-align: center;
+    display: inline-block;
+}
+
+#file-system article img {
+    width: 48px;
+    height: 48px;
+}
+
+#file-system article p {
+    margin: 0;
+    white-space:nowrap; 
+    text-overflow:ellipsis; 
+    overflow:hidden;
+    text-align: center;
+}
