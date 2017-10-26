@@ -65,37 +65,39 @@ function closewindow(id) {
 
 //拖动div
 var lastX,lastY,curX,curY,minusX,minusY;
-var oa = document.getElementsByClassName("window-head")[0];
-oa.onmousedown = function(e){
-    e.preventDefault();
-    lastX = e.clientX;
-    lastY = e.clientY;
-    window.onmousemove = function(event){
-        var e1 = event || window.event;
-        curX = e1.clientX;
-        curY = e1.clientY;
-
-        minusX = curX - lastX;
-        minusY = curY - lastY;
-
-        var ob = document.getElementById("file-system");
-
-        var left = parseInt(ob.style.left);
-        var top = parseInt(ob.style.top);
-        // console.log(oa.style.left)
-
-
-        // oa.style.left = left + minusX + 'px'; 
-        // oa.style.top = top + minusY + 'px';
-        ob.style.left = left + minusX + 'px'; 
-        ob.style.top = top + minusY + 'px';
-
-        // console.log(left,top,minusX,minusY ,curX,curY);
-        lastX = curX;
-        lastY = curY;
-    }
-    this.onmouseup = function(ev){
-        window.onmousemove = null;
-        this.onmouseup = null;
-    }
+var oa = document.getElementsByClassName("window-head");
+for(var i = 0 ; i < oa.length;i++){
+    (function () {
+        var tmp = i;
+        oa[i].onmousedown = function(e){
+            e.preventDefault();
+            lastX = e.clientX;
+            lastY = e.clientY;
+            window.onmousemove = function(event){
+                var e1 = event || window.event;
+                curX = e1.clientX;
+                curY = e1.clientY;
+    
+                minusX = curX - lastX;
+                minusY = curY - lastY;
+    
+                var ob = oa[tmp].parentNode;
+    
+                var left = parseInt(ob.style.left);
+                var top = parseInt(ob.style.top);
+    
+    
+                ob.style.left = left + minusX + 'px'; 
+                ob.style.top = top + minusY + 'px';
+    
+                lastX = curX;
+                lastY = curY;
+            }
+            this.onmouseup = function(ev){
+                window.onmousemove = null;
+                this.onmouseup = null;
+            }
+        }
+    })()
+    
 }
