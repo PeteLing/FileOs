@@ -63,32 +63,39 @@ function closewindow(id) {
 
 
 
-window.onload = function () {
+//拖动div
+var lastX,lastY,curX,curY,minusX,minusY;
+var oa = document.getElementsByClassName("window-head")[0];
+oa.onmousedown = function(e){
+    e.preventDefault();
+    lastX = e.clientX;
+    lastY = e.clientY;
+    window.onmousemove = function(event){
+        var e1 = event || window.event;
+        curX = e1.clientX;
+        curY = e1.clientY;
+
+        minusX = curX - lastX;
+        minusY = curY - lastY;
+
+        var ob = document.getElementById("file-system");
+
+        var left = parseInt(ob.style.left);
+        var top = parseInt(ob.style.top);
+        // console.log(oa.style.left)
 
 
-    function DragDiv(event, id) {
-        var adiv = document.getElementById(id);
-        var intX = event.screenX;
-        var intY = event.clientY;
-        console.log(event.screenX);
-        adiv.ondrag = function (event) {
-            // console.log(event.clientX,intX);
-            adiv.sytle.left = (event.clientX - intX) + 'px';
-            adiv.sytle.top = (event.clientY - intY) + 'px';
-        }(adiv,intX, intY)
+        // oa.style.left = left + minusX + 'px'; 
+        // oa.style.top = top + minusY + 'px';
+        ob.style.left = left + minusX + 'px'; 
+        ob.style.top = top + minusY + 'px';
+
+        // console.log(left,top,minusX,minusY ,curX,curY);
+        lastX = curX;
+        lastY = curY;
     }
-
-    var fs = document.getElementById('file-system');
-    fs.onmousedown = function (event) {
-        var adiv = document.getElementById('file-system');
-        var intX = event.clientX;
-        var intY = event.clientY;
-        adiv.ondrag = function (e) {
-            // console.log(e);
-            adiv.sytle.left = (e.clientX - intX) + 'px';
-            adiv.sytle.top = (e.clientY - intY) + 'px';
-        }
+    this.onmouseup = function(ev){
+        window.onmousemove = null;
+        this.onmouseup = null;
     }
-    // fs.ondrag = DragDiv('file-system');
-    // fs.onmouseup = mouseUp();
-  };
+}
