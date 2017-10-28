@@ -101,6 +101,19 @@ for(var i = 0 ; i < oa.length;i++){
     
 }
 
+//点击某个窗口时窗口自动置顶
+let windows = document.getElementsByClassName('windows');
+for (let index = 0 ; index < windows.length ; ++index) {
+    windows[index].onclick = function() {
+        let all = document.getElementsByClassName('windows');
+        let max = 0;
+        for (let j = 0 ; j < all.length ; ++j) {
+            max = max > getComputedStyle(all[j])['zIndex'] ? max : getComputedStyle(all[j])['zIndex'];
+        }
+        this.style.zIndex = max + 1;
+    }
+}
+
 //终端回车处理
 document.getElementById('terminal').onkeydown=keyDownQuery; 
 function keyDownQuery(e) {  
