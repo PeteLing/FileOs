@@ -263,6 +263,7 @@ body {
 
 #terminal .pc-name {
     color: green;
+    margin-right: 5px;
 }
 
 #terminal .path {

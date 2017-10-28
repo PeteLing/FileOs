@@ -108,7 +108,22 @@ function keyDownQuery(e) {
     var theEvent = e || window.event;  
     var code = theEvent.keyCode || theEvent.which || theEvent.charCode;  
     if (code == 13) {   
-        console.log('enter');
+        // console.log('enter');
+        let box = document.createElement('article');
+        box.innerHTML = "there's nothing" +
+        "<br><br>" +
+        "<span class='pc-name'>Peter@pc</span>" +
+        "<span class='path'>C:/Desktop</span><br>" +
+        "$&nbsp;<input class='command focus'></input>" 
+
+        let content = document.getElementById('terminal').getElementsByClassName('content')[0];
+        content.appendChild(box);
+
+        let inputs = document.getElementById('terminal').getElementsByTagName('input');
+        inputs[inputs.length - 2].setAttribute('disabled', 'disabled');
+        inputs[inputs.length - 1].focus();
+
+        
         return false;  
     }  
     return true;  
