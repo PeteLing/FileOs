@@ -145,12 +145,13 @@ function keyDownQuery(e) {
         "<span class='path'>C:/Desktop</span><br>" +
         "$&nbsp;<input class='command focus'></input>" 
 
-        let content = document.getElementById('terminal').getElementsByClassName('content')[0];
+        let terminal = document.getElementById('terminal'); 
+        let content = terminal.getElementsByClassName('content')[0];
         content.appendChild(box);
 
-        let inputs = document.getElementById('terminal').getElementsByTagName('input');
+        let inputs = terminal.getElementsByTagName('input');
         inputs[inputs.length - 2].setAttribute('disabled', 'disabled');
-        inputs[inputs.length - 1].focus();
+        terminal.onclick();
 
         
         return false;  
