@@ -33,6 +33,8 @@ cmdbt.onclick = function() {
     if (cmd.style.display == 'none') {
         cmd.onclick();
         cmd.style.display = 'block';
+        let inputs = cmd.getElementsByTagName('input');
+        inputs[inputs.length - 1].focus();
     } else {
         cmd.style.display = 'none';
     }
@@ -120,11 +122,16 @@ for (let index = 0 ; index < windows.length ; ++index) {
             max = max > getComputedStyle(all[j])['zIndex'] ? max : getComputedStyle(all[j])['zIndex'];
         }
         this.style.zIndex = parseInt(max) + 1;
+        if (this.getAttribute('id') == 'terminal') {
+            let inputs = this.getElementsByTagName('input');
+            inputs[inputs.length - 1].focus();
+        }
     }
 }
 
 //终端回车处理
-document.getElementById('terminal').onkeydown=keyDownQuery; 
+var terminal = document.getElementById('terminal');
+terminal.onkeydown=keyDownQuery; 
 function keyDownQuery(e) {  
     // 兼容FF和IE和Opera  
     var theEvent = e || window.event;  
