@@ -21,6 +21,7 @@ var filebt = document.getElementById('filebt');
 filebt.onclick = function () {
     var fs = document.getElementById('file-system');
     if (fs.style.display == 'none') {
+        fs.onclick();
         fs.style.display = 'block';
     } else {
         fs.style.display = 'none';
@@ -28,23 +29,25 @@ filebt.onclick = function () {
 }
 var cmdbt = document.getElementById('cmdbt');
 cmdbt.onclick = function() {
-
+    var cmd = document.getElementById('terminal');
+    if (cmd.style.display == 'none') {
+        cmd.onclick();
+        cmd.style.display = 'block';
+    } else {
+        cmd.style.display = 'none';
+    }
 }
-
-//文件系统
-var minbt = document.getElementById('file-system').getElementsByClassName('minbt')[0];
-minbt.onclick = function () { min('file-system')}
-
-var maxbt = document.getElementById('file-system').getElementsByClassName('maxbt')[0];
-maxbt.onclick = function () { max('file-system') };
-
-var closebt = document.getElementById('file-system').getElementsByClassName('closebt')[0];
-closebt.onclick = function () { closewindow('file-system'); }
 
 
 //最小化
-function min(id) {
-    var obj = document.getElementById(id);
+var minbts = document.getElementsByClassName('minbt');
+for (let i = 0 ; i < minbts.length ; ++i) {
+    minbts[i].onclick = function () {
+        min(this.parentNode.parentNode.parentNode.parentNode)
+    }
+}
+function min(obj) {
+    // var obj = document.getElementById(id);
     if (obj.style.display == 'none') {
         obj.style.display = 'block';
     } else {
@@ -57,6 +60,12 @@ function fullscreen(id) {
 }
 
 //关闭
+var closebts = document.getElementsByClassName('closebt');
+for (let i = 0 ; i < closebts.length ; ++i) {
+    closebts[i].onclick = function () {
+        closewindow(this.parentNode.parentNode.parentNode.parentNode)
+    }
+}
 function closewindow(id) {
     min(id);
 }
@@ -110,7 +119,7 @@ for (let index = 0 ; index < windows.length ; ++index) {
         for (let j = 0 ; j < all.length ; ++j) {
             max = max > getComputedStyle(all[j])['zIndex'] ? max : getComputedStyle(all[j])['zIndex'];
         }
-        this.style.zIndex = max + 1;
+        this.style.zIndex = parseInt(max) + 1;
     }
 }
 
