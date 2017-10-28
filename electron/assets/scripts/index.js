@@ -57,8 +57,24 @@ function min(obj) {
     }
 }
 //最大化
-function fullscreen(id) {
-
+var maxbts = document.getElementsByClassName('maxbt');
+for (let i = 0 ; i < maxbts.length; ++i) {
+    maxbts[i].onclick = function () {
+        fullscreen(this.parentElement.parentElement.parentElement.parentElement);
+    }
+}
+function fullscreen(obj) {
+    if (getComputedStyle(obj)['width'] == '800px') {
+        obj.style.top = "0";
+        obj.style.left = "0";
+        obj.style.width = "100%";
+        obj.style.height = "calc(100% - 46px)";
+    } else {
+        obj.style.width = "800px";
+        obj.style.height = "600px";
+        obj.style.top = "30px";
+        obj.style.left = "30px";
+    }
 }
 
 //关闭
