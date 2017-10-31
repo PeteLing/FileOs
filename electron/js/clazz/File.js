@@ -4,7 +4,7 @@ const DirStru = require('./DirStru');
 const Block = require('./Block');
 
 
-class File{
+class File {
     /**
      * 文件类
      * @param index 所在目录的索引
