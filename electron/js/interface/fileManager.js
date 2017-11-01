@@ -28,6 +28,10 @@ const FILE_TYPE_TXT = 0; //文件类型：txt文件
 const FILE_TYPE_DIR = 1;  //文件类型：子目录
 const FILE_FLAG_READ = 0 
 const FILE_FLAG_WIRTE = 1;
+const FILE_CHECK_NOT_EXIST = 0;
+const FILE_CHECK_EXIST = 1;
+const FILE_CHECK_PARENT_NOT_EXIST = 2;
+const FILE_CHECK_BUSY = 3;
 
 const path = require('path');
 const DirItem = require('../clazz/DirItem');
@@ -45,20 +49,21 @@ function getCurrentPath() {
 }
 
 //判断一个文件是否存在
-function registerItem(name) {
+function checkItem(name) {
     //返回信息
     let rst = [{
-        code : 0,
-        msg : 'successfully',
+        code : FILE_CHECK_NOT_EXIST,
+        msg : 'the file does not exist',
         diritems: null
     }, {
-        code : 1,
-        msg : 'the file existed!'
+        code : FILE_CHECK_EXIST,
+        msg : 'the file existed!',
+        diritem: null
     }, {
-        code : 2,
+        code : FILE_CHECK_PARENT_NOT_EXIST,
         msg : 'parent dir doesnot exist'
     }, {
-        code : 3,
+        code : FILE_CHECK_BUSY,
         msg : 'there is no free block'
     }]
     let currentPath = getCurrentPath().split('/');
@@ -67,14 +72,15 @@ function registerItem(name) {
     for (let i = 1 ; i < path.length ; ++i) {
         if (currentPath[i] == '') {
             if (diritems.length >= 8)
-                return rst[3];
+                return rst[FILE_CHECK_BUSY];
             for (let j = 0 ; j < diritems.length ; ++j) {
                 if (diritems[j].attr != 8 && diritems[j].name == name) {
-                    return rst[1];
+                    rst[FILE_CHECK_EXIST].diritem = diritems[j];
+                    return rst[FILE_CHECK_EXIST];
                 }
             }
-            rst[0].diritems = diritems;
-            return rst[0];
+            rst[FILE_CHECK_NOT_EXIST].diritems = diritems;
+            return rst[FILE_CHECK_NOT_EXIST];
         }
         for (let j = 0 ; j < diritems.length ; ++j) {
             if (diritems[j].attr == 8 && diritems[j].name == currentPath[i]) {
@@ -84,19 +90,20 @@ function registerItem(name) {
         }
         //父目录不存在
         if (j >= diritems.length) {
-            return rst[2];
+            return rst[FILE_CHECK_PARENT_NOT_EXIST];
         }
     }
     if (diritems.length >= 8) {
-        return rst[3];
+        return rst[FILE_CHECK_BUSY];
     }
     for (let i = 0 ; i < diritems.length ; ++i) {
         if (diritems[i].attr != 8 && diritems[i].name == name) {
-            return rst[1];
+            rst[FILE_CHECK_EXIST].diritem = diritems[j];
+            return rst[FILE_CHECK_EXIST];
         }
     }
-    rst[0].diritems = diritems;
-    return rst[0];
+    rst[FILE_CHECK_NOT_EXIST].diritems = diritems;
+    return rst[FILE_CHECK_NOT_EXIST];
 }
 
 function createFile(name, attr) {
@@ -107,7 +114,7 @@ function createFile(name, attr) {
         return false;
     }
     //判断是否父目录存在，是否文件重名,是否存在空闲登记项
-    let rstOfRegister = registerItem(name);
+    let rstOfRegister = checkItem(name);
     if (rstOfRegister.code != 0) {
         console.log(rstOfRegister.msg);
         alert(rstOfRegister.msg);
@@ -130,4 +137,34 @@ function createFile(name, attr) {
     //填写已打开文件表
     let absoluteName = getCurrentPath() + name;
     oftle = openfile.createOFTLE(absoluteName, attr, freeBlocks[0], 0, FILE_FLAG_WIRTE);
+}
+
+/**
+ * 
+ * @param {*文件名} name 
+ * @param {*操作类型：读/写} flag 
+ */
+function openFile(name, flag) {
+    let rst = checkItem(name);
+    if (rst.code != FILE_CHECK_EXIST) {
+        alert(rst.msg);
+        return false;
+    }
+    if (flag == FILE_FLAG_WIRTE) {
+        let attr_bin = rst.diritem.attr.toString(2);
+        if (attr_bin[attr_bin.length - 1] == 1) {
+            alert('只读文件，无法以写方式打开');
+            return false;
+        }
+    }
+    let absoluteName = getCurrentPath() + name;
+    if (openfile.existOFTLE(absoluteName))
+        return true;
+    let oftle = openfile.createOFTLE(absoluteName, rst.diritem.attr, rst.diritem.begin_num, rst.diritem.size, flag);
+    if(openfile.push(oftle)) {
+        return true;
+    } else {
+        alert('已达到最大打开文件上限');
+        return false;
+    }   
 }

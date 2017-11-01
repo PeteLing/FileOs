@@ -34,6 +34,15 @@ let openfile = function () {
     this.createOFTLE = function (name, attribute, number, length, flag) {
         return new OFTLE(name, attribute, number, length, flag);
     }
+
+    this.existOFTLE = function (name) {
+        for (let i = 0 ; i < this.length ; ++i) {
+            if (this.OFTLE[i].name == name) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
 
 module.exports = openfile;
