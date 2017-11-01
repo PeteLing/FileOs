@@ -34,6 +34,16 @@ class Fat {
     setBlock(blockIndex, value){
         this.blocksArr[blockIndex] = value;
     }
+
+    getFileBlocks (begin_num) {
+        let index = begin_num;
+        let rst = [begin_num];
+        while (this.blocksArr[index] != -1) {
+            index = this.blocksArr[index];
+            rst.push(index);
+        }
+        return rst;
+    }
 }
 
 

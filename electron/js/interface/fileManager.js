@@ -168,3 +168,29 @@ function openFile(name, flag) {
         return false;
     }   
 }
+
+/**
+ * 
+ * @param {*文件名} name 
+ * @param {*读取长度} length 
+ */
+function readFile(name, length) {
+    if (!openfile.existOFTLE(absoluteName)) {
+        this.openFile(name, FILE_FLAG_READ);
+    }
+    let absoluteName = getCurrentPath() + name;
+    let oftle = openfile.getOFTLE(absoluteName);
+    if (oftle == false)
+        return false;
+    if (oftle.flag == FILE_FLAG_WIRTE) {
+        alert('不能已写方式打开文件');
+        return false;
+    }
+    let fileblocks = fat.getFileBlocks(oftle.number);
+    let content = '';
+    for (let i = 0 ; i < fileblocks.length ; ++i) {
+        content += disk.getContent(fileblocks[i]);
+    }
+    return content;
+
+}

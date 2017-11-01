@@ -35,10 +35,10 @@ let openfile = function () {
         return new OFTLE(name, attribute, number, length, flag);
     }
 
-    this.existOFTLE = function (name) {
+    this.getOFTLE = function (name) {
         for (let i = 0 ; i < this.length ; ++i) {
             if (this.OFTLE[i].name == name) {
-                return true;
+                return this.OFTLE[i];
             }
         }
         return false;

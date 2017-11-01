@@ -13,6 +13,9 @@ class Disk {
         fat.setBlock(2, -1);
     }
 
+    getContent(num) {
+        return this.blocks[num];
+    }
 
 
 }
