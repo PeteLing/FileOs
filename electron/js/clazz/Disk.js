@@ -6,7 +6,7 @@ class Disk {
     constructor () {
         this.length = BLOCK_NUM;
         this.blocks = new Array(this.length);
-        let desktopItem = new DirItem('/Desktop', ' ', 8, 2, 0);
+        let desktopItem = new DirItem('Desktop', FILE_TYPE_DIR, 8, 2, 0);
         this.blocks[1] = [desktopItem]; //根目录
         this.blocks[2] = [];
         fat.setBlock(1, -1);
@@ -23,7 +23,13 @@ class Disk {
         this.blocks[num] = buffer;
     }
 
+    setDir (num) {
+        this.blocks[num] = [];
+    }
 
+    getDir (num) {
+        this.blocks[num];
+    }
 }
 
 module.exports = Disk;
