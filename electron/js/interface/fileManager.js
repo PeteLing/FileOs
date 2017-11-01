@@ -263,5 +263,19 @@ function writeFile(name, buffer, length) {
         fat.setBlock(freeBlocks[i], freeBlocks[i + 1]);
         disk.setContent(freeBlocks[i], contentAry[i]);
     }
+    //修改已打开文件表
+    oftle.length = byteLen;
+    //修改目录项
+    let item = checkItem(name);
+    item.setSize(size);
+    return true;
+}
+
+function closeFile(name) {
+    let absoluteName = getCurrentPath() + name;
+    let oftle = openfile.getOFTLE(absoluteName);
+    if (oftle == false)
+        return true;
+    openfile.remove(oftle);
     return true;
 }
