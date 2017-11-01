@@ -58,7 +58,8 @@ function checkItem(name) {
     }, {
         code : FILE_CHECK_EXIST,
         msg : 'the file existed!',
-        diritem: null
+        diritem: null,
+        diritems: null,
     }, {
         code : FILE_CHECK_PARENT_NOT_EXIST,
         msg : 'parent dir doesnot exist'
@@ -76,6 +77,7 @@ function checkItem(name) {
             for (let j = 0 ; j < diritems.length ; ++j) {
                 if (diritems[j].attr != 8 && diritems[j].name == name) {
                     rst[FILE_CHECK_EXIST].diritem = diritems[j];
+                    rst[FILE_CHECK_EXIST].diritems = diritems;
                     return rst[FILE_CHECK_EXIST];
                 }
             }
@@ -99,6 +101,7 @@ function checkItem(name) {
     for (let i = 0 ; i < diritems.length ; ++i) {
         if (diritems[i].attr != 8 && diritems[i].name == name) {
             rst[FILE_CHECK_EXIST].diritem = diritems[j];
+            rst[FILE_CHECK_EXIST].diritems = diritems;
             return rst[FILE_CHECK_EXIST];
         }
     }
@@ -278,4 +281,24 @@ function closeFile(name) {
         return true;
     openfile.remove(oftle);
     return true;
+}
+
+function deleteFile(name) {
+    let checkitem = checkItem(name);
+    if (checkitem.code != FILE_CHECK_EXIST) {
+        alert('文件不存在');
+        return false;
+    }
+    let absoluteName = getCurrentPath() + name;
+    let oftle = openfile.getOFTLE(absoluteName);
+    if (oftle != false) {
+        alert('文件已经打开');
+        return false;
+    }
+    //删除目录项
+    let index = checkitem.diritems.indexOf(checkitem.diritem);
+    checkitem.diritems.splice(index, 1);
+    //归还磁盘空间;
+    fat.freeFileBlocks(checkitem.diritem.begin_num);
+
 }

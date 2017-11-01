@@ -13,11 +13,11 @@ class Disk {
         fat.setBlock(2, -1);
     }
 
-    getContent(num) {
+    getContent (num) {
         return this.blocks[num];
     }
 
-    setContent(num, buffer) {
+    setContent (num, buffer) {
         if (num < 1 || num >= this.length)
             return false;
         this.blocks[num] = buffer;

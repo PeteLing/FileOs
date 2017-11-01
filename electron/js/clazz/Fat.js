@@ -46,6 +46,18 @@ class Fat {
         }
         return rst;
     }
+
+    //释放文件占用的空间
+    freeFileBlocks(begin_num) {
+        let index = begin_num;
+        let next_i = ''
+        while (this.blocksArr[index] != -1) {
+            next_i = this.blocksArr[index];
+            this.blocksArr[index] = 0;
+            index = next_i;
+        }
+        this.blocksArr[index] = 0;
+    }
 }
 
 
