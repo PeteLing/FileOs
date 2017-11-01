@@ -3,10 +3,10 @@ const electron = require('electron');
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 const ipcMain = electron.ipcMain;
-
+const Menu = electron.Menu;
+const MenuItem = electron.MenuItem;
 const path = require('path');
 const url = require('url');
-
 
 let mainWindow;
 
@@ -23,7 +23,7 @@ function createWindow () {
   }));
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -82,4 +82,81 @@ ipcMain.on('edit_file', ()=>{
         protocol: 'file:',
         slashes: true
     }));
+});
+
+
+/*新建文件或文件夹的菜单*/
+const menuCreate = new Menu();
+menuCreate.append(new MenuItem({
+    label: '新建文件',
+    click() {
+
+    }
+}));
+menuCreate.append(new MenuItem({
+    label: '新建文件夹',
+    click() {
+
+    }
+}));
+
+/*文件的菜单*/
+const menuFileEdit = new Menu();
+menuFileEdit.append(new MenuItem({
+    label: '编辑',
+    click() {
+
+    }
+}));
+menuFileEdit.append(new MenuItem({
+    label: '重命名',
+    click() {
+
+    }
+}));
+menuFileEdit.append(new MenuItem({
+    label: '删除',
+    click() {
+
+    }
+}));
+menuFileEdit.append(new MenuItem({
+    label: '属性',
+    click() {
+
+    }
+}));
+
+/*文件夹的菜单*/
+const menuFolderEdit = new Menu();
+menuFolderEdit.append(new MenuItem({
+    label: '打开',
+    click() {
+        files_show.enterFolder(folderNow);
+    }
+}));
+menuFolderEdit.append(new MenuItem({
+    label: '重命名',
+    click() {
+        //files_show.editFile(folderNow);
+    }
+}));
+menuFolderEdit.append(new MenuItem({
+    label: '删除',
+    click() {
+
+    }
+}));
+menuFolderEdit.append(new MenuItem({
+    label: '属性',
+    click() {
+
+    }
+}));
+
+
+
+ipcMain.on('show-context-menu', function (event) {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    menuFolderEdit.popup(win);
 });
