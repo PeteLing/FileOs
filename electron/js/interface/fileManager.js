@@ -210,7 +210,7 @@ function getByteLen(val) {
     }
     return len;
 }
-//
+//（通过Buffer返回二进制数据的字节长度而不考虑各种编码）
 function getBytesLen(val){
     return getLength(val);
 }
