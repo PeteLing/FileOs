@@ -2,7 +2,6 @@
 
 /* const electron = require('electron');
 const ipcRenderer = electron.ipcRenderer;
-
 const DiskClass = require('./js/clazz/Disk');
 const DirStruClass = require('./js/clazz/DirStru');
 const FileClass = require('./js/clazz/File');
@@ -11,14 +10,10 @@ const Fat = require('./js/clazz/Fat');
 const storage = require('./js/clazz/localStorage');
 const stringBytes = require('./js/util/stringBytes');
 const Ram = require('./js/clazz/Ram');
-
 const dirStru = new DirStruClass();
 const disk = new DiskClass();
-
-
 const newFile = function () {
     file = new FileClass()
-
 };
  */
 
@@ -28,7 +23,7 @@ const DIRITEM_SIZE = 128;
 const DIRITEM_MAX_LENGTH = BLOCK_SIZE / DIRITEM_SIZE;
 const FILE_TYPE_TXT = 0; //文件类型：txt文件
 const FILE_TYPE_DIR = 1;  //文件类型：子目录
-const FILE_FLAG_READ = 0 
+const FILE_FLAG_READ = 0
 const FILE_FLAG_WIRTE = 1;
 const FILE_CHECK_NOT_EXIST = 0;
 const FILE_CHECK_EXIST = 1;
@@ -139,16 +134,16 @@ function createFile(name, attr) {
     //登记到目录项
     let file = new DirItem(name, FILE_TYPE_TXT, attr, freeBlocks[0], 0);
     diritems.push(file);
-    
+
     //填写已打开文件表
     let absoluteName = getCurrentPath() + name;
     oftle = openfile.createOFTLE(absoluteName, attr, freeBlocks[0], 0, FILE_FLAG_WIRTE);
 }
 
 /**
- * 
- * @param {*文件名} name 
- * @param {*操作类型：读/写} flag 
+ *
+ * @param {*文件名} name
+ * @param {*操作类型：读/写} flag
  */
 function openFile(name, flag) {
     let rst = checkItem(name, FILE_TYPE_TXT);
@@ -172,13 +167,13 @@ function openFile(name, flag) {
     } else {
         alert('已达到最大打开文件上限');
         return false;
-    }   
+    }
 }
 
 /**
- * 
- * @param {*文件名} name 
- * @param {*读取长度} length 
+ *
+ * @param {*文件名} name
+ * @param {*读取长度} length
  */
 function readFile(name, length) {
     let absoluteName = getCurrentPath() + name;
@@ -205,10 +200,10 @@ function readFile(name, length) {
 function getByteLen(val) {
     var len = 0;
     for (var i = 0; i < val.length; i++) {
-      if (val[i].match(/[^\x00-\xff]/ig) != null) //全角或汉字
-          len += 2;
-      else
-          len += 1;
+        if (val[i].match(/[^\x00-\xff]/ig) != null) //全角或汉字
+            len += 2;
+        else
+            len += 1;
     }
     return len;
 }
@@ -227,16 +222,16 @@ function getByteVal(val, max) {
     var returnValue = '';
     var byteValLen = 0;
     for (var i = 0; i < val.length; i++) {
-      if (val[i].match(/[^\x00-\xff]/ig) != null)
-        byteValLen += 2;
-      else
-        byteValLen += 1;
-      if (byteValLen > max)
-      break;
-      returnValue += val[i];
+        if (val[i].match(/[^\x00-\xff]/ig) != null)
+            byteValLen += 2;
+        else
+            byteValLen += 1;
+        if (byteValLen > max)
+            break;
+        returnValue += val[i];
     }
     return returnValue;
-  }
+}
 
 function sliceStr2Array(val, size) {
     let rst = [];
@@ -249,10 +244,10 @@ function sliceStr2Array(val, size) {
 }
 
 /**
- * 
- * @param {*文件名} name 
- * @param {*缓冲} buffer 
- * @param {*写长度} length 
+ *
+ * @param {*文件名} name
+ * @param {*缓冲} buffer
+ * @param {*写长度} length
  */
 function writeFile(name, buffer, length) {
     let absoluteName = getCurrentPath() + name;
