@@ -160,7 +160,7 @@ function openFile(name, flag) {
     let absoluteName = getCurrentPath() + name;
     if (openfile.existOFTLE(absoluteName))
         return true;
-    let oftle = openfile.createOFTLE(absoluteName, rst.diritem.attr, rst.diritem.begin_num, rst.diritem.size, flag);
+    let oftle = openfile.createOFTLE(absoluteName, rst.diritem.attr, rst.diritem.begin_num, 1, flag);
     if(openfile.push(oftle)) {
         return true;
     } else {
@@ -175,10 +175,11 @@ function openFile(name, flag) {
  * @param {*读取长度} length 
  */
 function readFile(name, length) {
-    if (!openfile.existOFTLE(absoluteName)) {
-        this.openFile(name, FILE_FLAG_READ);
-    }
     let absoluteName = getCurrentPath() + name;
+    if (!openfile.existOFTLE(absoluteName)) {
+        if(!this.openFile(name, FILE_FLAG_READ))
+            return false;
+    }
     let oftle = openfile.getOFTLE(absoluteName);
     if (oftle == false)
         return false;
@@ -192,5 +193,75 @@ function readFile(name, length) {
         content += disk.getContent(fileblocks[i]);
     }
     return content;
+}
 
+//返回val的字节长度
+function getByteLen(val) {
+    var len = 0;
+    for (var i = 0; i < val.length; i++) {
+      if (val[i].match(/[^\x00-\xff]/ig) != null) //全角或汉字
+          len += 2;
+      else
+          len += 1;
+    }
+    return len;
+}
+
+//返回val在规定字节长度max内的值
+function getByteVal(val, max) {
+    var returnValue = '';
+    var byteValLen = 0;
+    for (var i = 0; i < val.length; i++) {
+      if (val[i].match(/[^\x00-\xff]/ig) != null)
+        byteValLen += 2;
+      else
+        byteValLen += 1;
+      if (byteValLen > max)
+      break;
+      returnValue += val[i];
+    }
+    return returnValue;
+  }
+
+function sliceStr2Array(val, size) {
+    let rst = [];
+    let temp = '';
+    while (val.length > 0) {
+        temp = this.getByteVal(size)
+        rst.push(temp);
+        val = val.substr(temp.length);
+    }
+}
+
+/**
+ * 
+ * @param {*文件名} name 
+ * @param {*缓冲} buffer 
+ * @param {*写长度} length 
+ */
+function writeFile(name, buffer, length) {
+    let absoluteName = getCurrentPath() + name;
+    if (!openfile.existOFTLE(absoluteName)) {
+        if(!this.openFile(name, FILE_FLAG_READ))
+            return false;
+    }
+    let oftle = openfile.getOFTLE(absoluteName);
+    if (oftle.flag != FILE_FLAG_WIRTE) {
+        alert('不能以读方式写文件');
+        return false;
+    }
+    let byteLen = this.getByteLen(buffer);
+    let size = Math.ceil(byteLen / BLOCK_SIZE)
+    let freeBlocks = fat.getFreeBlocks(size);
+    if (freeBlocks.length < size) {
+        alert('磁盘空间不足!');
+        return false;
+    }
+    freeBlocks.push(-1);
+    let contentAry = this.sliceStr2Array(buffer, BLOCK_SIZE);
+    for (let i = 0 ; i < size ; ++i) {
+        fat.setBlock(freeBlocks[i], freeBlocks[i + 1]);
+        disk.setContent(freeBlocks[i], contentAry[i]);
+    }
+    return true;
 }

@@ -17,6 +17,12 @@ class Disk {
         return this.blocks[num];
     }
 
+    setContent(num, buffer) {
+        if (num < 1 || num >= this.length)
+            return false;
+        this.blocks[num] = buffer;
+    }
+
 
 }
 

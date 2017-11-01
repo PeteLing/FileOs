@@ -32,6 +32,8 @@ class Fat {
     }
 
     setBlock(blockIndex, value){
+        if (blockIndex < 1 || blockIndex >= this.length)
+            return false;
         this.blocksArr[blockIndex] = value;
     }
 
