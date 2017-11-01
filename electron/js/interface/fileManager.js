@@ -35,6 +35,8 @@ const FILE_CHECK_EXIST = 1;
 const FILE_CHECK_PARENT_NOT_EXIST = 2;
 const FILE_CHECK_BUSY = 3;
 
+const getLength = require('../utils/getContentBytesLength');
+
 const path = require('path');
 const DirItem = require('../clazz/DirItem');
 const Fat = require('../clazz/Fat');
@@ -207,6 +209,11 @@ function getByteLen(val) {
           len += 1;
     }
     return len;
+}
+
+//（通过Buffer返回二进制数据的字节长度而不考虑各种编码）
+function getBytesLen(val){
+    return getLength(val);
 }
 
 //返回val在规定字节长度max内的值
