@@ -322,3 +322,17 @@ function mkdir(name) {
     let diritem = new DirItem(name, FILE_TYPE_DIR, 8, freeBlock[0], 0);
     rstOfItem.diritems.push(diritem);
 }
+
+function ls(name) {
+    let rstOfItem = checkItem(name);
+    if (rstOfItem != FILE_CHECK_EXIST) {
+        alert(rstOfItem.msg);
+        return false;
+    }
+    let diritems = disk.getDir(rstOfItem.diritem.begin_num);
+    return diritems;
+}
+
+function rd() {
+    
+}

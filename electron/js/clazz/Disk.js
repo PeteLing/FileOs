@@ -26,6 +26,10 @@ class Disk {
     setDir (num) {
         this.blocks[num] = [];
     }
+
+    getDir (num) {
+        this.blocks[num];
+    }
 }
 
 module.exports = Disk;
