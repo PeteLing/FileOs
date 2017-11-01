@@ -39,6 +39,8 @@ const Fat = require('../clazz/Fat');
 const OpenFile = require('../clazz/OpenFile');
 const Disk = require('../clazz/Disk');
 
+const getLength = require('../utils/getContentBytesLength');
+
 let disk = new Disk();
 let fat = new Fat();
 let openfile = new OpenFile();
@@ -208,6 +210,10 @@ function getByteLen(val) {
           len += 1;
     }
     return len;
+}
+//
+function getBytesLen(val){
+    return getLength(val);
 }
 
 //返回val在规定字节长度max内的值
