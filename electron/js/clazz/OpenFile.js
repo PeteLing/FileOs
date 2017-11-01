@@ -9,11 +9,11 @@ const n = 5; //实验中系统允许打开文件的最大数量
  * @param flag 操作类型，用“0”表示以读操作方式打开文件，用“1”表示以写操作方式打开文件
  */
 let OFTLE = function (name, attribute, number, length, flag) {  //已打开文件表项类型定义
-    this.name = null; 
-    this.attribute = null; 
-    this.number = null; 
-    this.length = null; 
-    this.flag = null; 
+    this.name = name; 
+    this.attribute = attribute; 
+    this.number = number; 
+    this.length = length; 
+    this.flag = flag; 
 }
 
 let openfile = function () {
@@ -42,7 +42,7 @@ let openfile = function () {
     }
 
     this.getOFTLE = function (name) {
-        for (let i = 0 ; i < this.length ; ++i) {
+        for (let i = 0 ; i < this.OFTLE.length ; ++i) {
             if (this.OFTLE[i].name == name) {
                 return this.OFTLE[i];
             }

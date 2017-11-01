@@ -35,7 +35,7 @@ const FILE_CHECK_EXIST = 1;
 const FILE_CHECK_PARENT_NOT_EXIST = 2;
 const FILE_CHECK_BUSY = 3;
 
-const getLength = require('../utils/getContentBytesLength');
+// const getLength = require('../utils/getContentBytesLength');
 
 const path = require('path');
 const DirItem = require('../clazz/DirItem');
@@ -47,6 +47,14 @@ let disk = new Disk();
 let fat = new Fat();
 let openfile = new OpenFile();
 
+//disk初始化 
+let desktopItem = new DirItem('Desktop', FILE_TYPE_DIR, 8, 2, 0);
+disk.blocks[1] = [desktopItem]; //根目录加入desktop目录项
+disk.blocks[2] = [];
+fat.setBlock(0, -1);
+fat.setBlock(1, -1);
+fat.setBlock(2, -1);
+// window.fat = fat;
 function getCurrentPath() {
     let currentPath = '/';
     return currentPath;
@@ -71,7 +79,7 @@ function checkItem(name, file_type) {
     let currentPath = getCurrentPath().split('/');
     //从根目录开始寻找
     let diritems = disk.blocks[1];
-    for (let i = 1 ; i < path.length - 1 ; ++i) {
+    for (let i = 1 ; i < currentPath.length - 1 ; ++i) {
         if (currentPath[i] == '') {
             for (let j = 0 ; j < diritems.length ; ++j) {
                 if (diritems[j].type == file_type && diritems[j].name == name) {
@@ -94,9 +102,14 @@ function checkItem(name, file_type) {
             return rst[FILE_CHECK_PARENT_NOT_EXIST];
         }
     }
+    //是根目录
+    if (name == '') {
+        rst[FILE_CHECK_EXIST].diritems = diritems;
+        return rst[FILE_CHECK_EXIST];
+    }
     for (let i = 0 ; i < diritems.length ; ++i) {
         if (diritems[i].type == file_type && diritems[i].name == name) {
-            rst[FILE_CHECK_EXIST].diritem = diritems[j];
+            rst[FILE_CHECK_EXIST].diritem = diritems[i];
             rst[FILE_CHECK_EXIST].diritems = diritems;
             return rst[FILE_CHECK_EXIST];
         }
@@ -105,10 +118,10 @@ function checkItem(name, file_type) {
     return rst[FILE_CHECK_NOT_EXIST];
 }
 
-function createFile(name, attr) {
+module.exports.createFile = function(name, attr) {
     //判断文件属性是否只读
     let attr_bin = attr.toString(2);
-    if (attr.bin[attr_bin.length - 1] == 1) {
+    if (attr_bin[attr_bin.length - 1] == 1) {
         alert('只读文件，无法新建');
         return false;
     }
@@ -127,7 +140,7 @@ function createFile(name, attr) {
     }
     //寻找空闲块
     let freeBlocks = fat.getFreeBlocks(1);
-    if (freeBlocks.length <= 0) {
+    if (freeBlocks.length < 1) {
         console.log('磁盘空间不足！');
         alert('磁盘空间不足！');
         return false;
@@ -140,7 +153,8 @@ function createFile(name, attr) {
     
     //填写已打开文件表
     let absoluteName = getCurrentPath() + name;
-    oftle = openfile.createOFTLE(absoluteName, attr, freeBlocks[0], 0, FILE_FLAG_WIRTE);
+    let oftle = openfile.createOFTLE(absoluteName, attr, freeBlocks[0], 0, FILE_FLAG_WIRTE);
+    openfile.push(oftle);
 }
 
 /**
@@ -148,7 +162,7 @@ function createFile(name, attr) {
  * @param {*文件名} name 
  * @param {*操作类型：读/写} flag 
  */
-function openFile(name, flag) {
+module.exports.openFile = function(name, flag) {
     let rst = checkItem(name, FILE_TYPE_TXT);
     if (rst.code != FILE_CHECK_EXIST) {
         alert(rst.msg);
@@ -162,7 +176,7 @@ function openFile(name, flag) {
         }
     }
     let absoluteName = getCurrentPath() + name;
-    if (openfile.existOFTLE(absoluteName))
+    if (openfile.getOFTLE(absoluteName))
         return true;
     let oftle = openfile.createOFTLE(absoluteName, rst.diritem.attr, rst.diritem.begin_num, 1, flag);
     if(openfile.push(oftle)) {
@@ -178,9 +192,9 @@ function openFile(name, flag) {
  * @param {*文件名} name 
  * @param {*读取长度} length 
  */
-function readFile(name, length) {
+module.exports.readFile = function(name, length) {
     let absoluteName = getCurrentPath() + name;
-    if (!openfile.existOFTLE(absoluteName)) {
+    if (!openfile.getOFTLE(absoluteName)) {
         if(!this.openFile(name, FILE_FLAG_READ))
             return false;
     }
@@ -236,10 +250,11 @@ function sliceStr2Array(val, size) {
     let rst = [];
     let temp = '';
     while (val.length > 0) {
-        temp = this.getByteVal(size)
+        temp = getByteVal(val, size)
         rst.push(temp);
         val = val.substr(temp.length);
     }
+    return rst;
 }
 
 /**
@@ -248,10 +263,10 @@ function sliceStr2Array(val, size) {
  * @param {*缓冲} buffer 
  * @param {*写长度} length 
  */
-function writeFile(name, buffer, length) {
+module.exports.writeFile = function(name, buffer, length) {
     let absoluteName = getCurrentPath() + name;
-    if (!openfile.existOFTLE(absoluteName)) {
-        if(!this.openFile(name, FILE_FLAG_READ))
+    if (!openfile.getOFTLE(absoluteName)) {
+        if(!this.openFile(name, FILE_FLAG_WIRTE))
             return false;
     }
     let oftle = openfile.getOFTLE(absoluteName);
@@ -259,28 +274,37 @@ function writeFile(name, buffer, length) {
         alert('不能以读方式写文件');
         return false;
     }
-    let byteLen = this.getByteLen(buffer);
+    let byteLen = getByteLen(buffer);
     let size = Math.ceil(byteLen / BLOCK_SIZE)
-    let freeBlocks = fat.getFreeBlocks(size);
-    if (freeBlocks.length < size) {
-        alert('磁盘空间不足!');
-        return false;
+    let fileBlocks = fat.getFileBlocks(oftle.number);
+    let freeBlocks = [];
+    if (fileBlocks.length <= size) {
+        freeBlocks = fat.getFreeBlocks(size - fileBlocks.length);
+        if (freeBlocks.length < size - fileBlocks.length) {
+            alert('磁盘空间不足!');
+            return false;
+        }
+
+    } else {
+        fat.freeFileBlocks(oftle.number);
+        fileBlocks.splice(0, size);
     }
-    freeBlocks.push(-1);
-    let contentAry = this.sliceStr2Array(buffer, BLOCK_SIZE);
+    let newBlocks = fileBlocks.concat(freeBlocks);
+    newBlocks.push(-1);
+    let contentAry = sliceStr2Array(buffer, BLOCK_SIZE);
     for (let i = 0 ; i < size ; ++i) {
-        fat.setBlock(freeBlocks[i], freeBlocks[i + 1]);
-        disk.setContent(freeBlocks[i], contentAry[i]);
+        fat.setBlock(newBlocks[i], newBlocks[i + 1]);
+        disk.setContent(newBlocks[i], contentAry[i]);
     }
     //修改已打开文件表
     oftle.length = byteLen;
     //修改目录项
     let item = checkItem(name, FILE_TYPE_TXT);
-    item.setSize(size);
+    item.diritem.setSize(size);
     return true;
 }
 
-function closeFile(name) {
+module.exports.closeFile = function(name) {
     let absoluteName = getCurrentPath() + name;
     let oftle = openfile.getOFTLE(absoluteName);
     if (oftle == false)
@@ -289,7 +313,7 @@ function closeFile(name) {
     return true;
 }
 
-function deleteFile(name) {
+module.exports.deleteFile = function(name) {
     let checkitem = checkItem(name, FILE_TYPE_TXT);
     if (checkitem.code != FILE_CHECK_EXIST) {
         alert(checkitem.msg);
@@ -309,7 +333,7 @@ function deleteFile(name) {
     return true;
 }
 
-function mkdir(name) {
+module.exports.mkdir = function(name) {
     let rstOfItem = checkItem(name);
     if (rstOfItem.code != FILE_CHECK_NOT_EXIST) {
         alert(rstOfItem.msg);
@@ -330,17 +354,21 @@ function mkdir(name) {
     rstOfItem.diritems.push(diritem);
 }
 
-function ls(name) {
+module.exports.ls = function(name = '') {
     let rstOfItem = checkItem(name, FILE_TYPE_DIR);
-    if (rstOfItem != FILE_CHECK_EXIST) {
+    if (rstOfItem.code != FILE_CHECK_EXIST) {
         alert(rstOfItem.msg);
         return false;
     }
-    let diritems = disk.getDir(rstOfItem.diritem.begin_num);
+    let diritems = '';
+    if (name != '') 
+        diritems = disk.getDir(rstOfItem.diritem.begin_num);
+    else 
+        diritems = rstOfItem.diritems;
     return diritems;
 }
 
-function rd(name) {
+module.exports.rd = function(name) {
     let rstOfItem = checkItem(name, FILE_TYPE_DIR);
     if (rstOfItem.code != FILE_CHECK_EXIST) {
         alert(rstOfItem.msg);
@@ -358,3 +386,7 @@ function rd(name) {
     fat.freeFileBlocks(rstOfItem.diritem.begin_num);
     return true;
 }
+
+module.exports.fat = fat;
+module.exports.disk = disk;
+module.exports.openfile = openfile;

@@ -15,3 +15,4 @@ exports.splitContent = (content) => {
     }
     return contentArr;
 };
+

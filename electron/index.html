@@ -129,7 +129,7 @@
         <div class='warp'></div>
         <div id="win-menu" class="hidden">
             <div class="list">
-                <div class="item">
+                <div class="item" id='file_manager'>
                     <img src='./assets/images/file.png' class='icon'><span class="title">文件管理</span>
                 </div>
                 <div class="item">
@@ -168,6 +168,7 @@
 <script>
     // You can also require other files to run in this process
     require('./assets/scripts/index.js');
+    window.fs = require('./js/interface/fileManager.js');
     require('./js/event/index.js');
 </script>
 </html>

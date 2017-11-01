@@ -3,6 +3,8 @@
  * 对应于磁盘块 数组长度为128
  * 每一个块1024字节
  */
+
+const BLOCK_NUM = 128;    //磁盘块数量
 class Fat {
 
     constructor () {
@@ -22,9 +24,12 @@ class Fat {
     getFreeBlocks (num) {
         let rst = [];
         let ct = 0;
-        for (let i = 1 ; ct < num && i < this.length ; ++i) {
-            if (this.blocksArr[i] === 0) {
-                rst.push[i];
+        for (let i = 1 ; i < this.blocksArr.length ; ++i) {
+            if (ct >= num) {
+                break;
+            }
+            if (this.blocksArr[i] == 0) {
+                rst.push(i);
                 ct++;
             }
         }
