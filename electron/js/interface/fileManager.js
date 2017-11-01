@@ -24,6 +24,8 @@ const newFile = function () {
 
 const BLOCK_SIZE = 1024;   //磁盘块大小
 const BLOCK_NUM = 128;    //磁盘块数量
+const DIRITEM_SIZE = 128;
+const DIRITEM_MAX_LENGTH = BLOCK_SIZE / DIRITEM_SIZE;
 const FILE_TYPE_TXT = 0; //文件类型：txt文件
 const FILE_TYPE_DIR = 1;  //文件类型：子目录
 const FILE_FLAG_READ = 0 
@@ -49,7 +51,7 @@ function getCurrentPath() {
 }
 
 //判断一个文件是否存在
-function checkItem(name) {
+function checkItem(name, file_type) {
     //返回信息
     let rst = [{
         code : FILE_CHECK_NOT_EXIST,
@@ -63,19 +65,14 @@ function checkItem(name) {
     }, {
         code : FILE_CHECK_PARENT_NOT_EXIST,
         msg : 'parent dir doesnot exist'
-    }, {
-        code : FILE_CHECK_BUSY,
-        msg : 'there is no free block'
     }]
     let currentPath = getCurrentPath().split('/');
     //从根目录开始寻找
     let diritems = disk.blocks[1];
-    for (let i = 1 ; i < path.length ; ++i) {
+    for (let i = 1 ; i < path.length - 1 ; ++i) {
         if (currentPath[i] == '') {
-            if (diritems.length >= 8)
-                return rst[FILE_CHECK_BUSY];
             for (let j = 0 ; j < diritems.length ; ++j) {
-                if (diritems[j].attr != 8 && diritems[j].name == name) {
+                if (diritems[j].type == file_type && diritems[j].name == name) {
                     rst[FILE_CHECK_EXIST].diritem = diritems[j];
                     rst[FILE_CHECK_EXIST].diritems = diritems;
                     return rst[FILE_CHECK_EXIST];
@@ -85,7 +82,7 @@ function checkItem(name) {
             return rst[FILE_CHECK_NOT_EXIST];
         }
         for (let j = 0 ; j < diritems.length ; ++j) {
-            if (diritems[j].attr == 8 && diritems[j].name == currentPath[i]) {
+            if (diritems[j].type == FILE_TYPE_DIR && diritems[j].name == currentPath[i]) {
                 diritems = disk.blocks[diritems[j].begin_num];
                 break;
             }
@@ -95,11 +92,8 @@ function checkItem(name) {
             return rst[FILE_CHECK_PARENT_NOT_EXIST];
         }
     }
-    if (diritems.length >= 8) {
-        return rst[FILE_CHECK_BUSY];
-    }
     for (let i = 0 ; i < diritems.length ; ++i) {
-        if (diritems[i].attr != 8 && diritems[i].name == name) {
+        if (diritems[i].type == file_type && diritems[i].name == name) {
             rst[FILE_CHECK_EXIST].diritem = diritems[j];
             rst[FILE_CHECK_EXIST].diritems = diritems;
             return rst[FILE_CHECK_EXIST];
@@ -116,14 +110,19 @@ function createFile(name, attr) {
         alert('只读文件，无法新建');
         return false;
     }
-    //判断是否父目录存在，是否文件重名,是否存在空闲登记项
-    let rstOfRegister = checkItem(name);
-    if (rstOfRegister.code != 0) {
+    //判断是否父目录存在，是否文件重名
+    let rstOfRegister = checkItem(name, FILE_TYPE_TXT);
+    if (rstOfRegister.code != FILE_CHECK_NOT_EXIST) {
         console.log(rstOfRegister.msg);
         alert(rstOfRegister.msg);
         return false;
     }
+    //判断是否有有空闲
     let diritems = rstOfRegister.diritems;
+    if (diritems.length > 8) {
+        alert('目录满啦！');
+        return false;
+    }
     //寻找空闲块
     let freeBlocks = fat.getFreeBlocks(1);
     if (freeBlocks.length <= 0) {
@@ -148,7 +147,7 @@ function createFile(name, attr) {
  * @param {*操作类型：读/写} flag 
  */
 function openFile(name, flag) {
-    let rst = checkItem(name);
+    let rst = checkItem(name, FILE_TYPE_TXT);
     if (rst.code != FILE_CHECK_EXIST) {
         alert(rst.msg);
         return false;
@@ -269,7 +268,7 @@ function writeFile(name, buffer, length) {
     //修改已打开文件表
     oftle.length = byteLen;
     //修改目录项
-    let item = checkItem(name);
+    let item = checkItem(name, FILE_TYPE_TXT);
     item.setSize(size);
     return true;
 }
@@ -284,7 +283,7 @@ function closeFile(name) {
 }
 
 function deleteFile(name) {
-    let checkitem = checkItem(name);
+    let checkitem = checkItem(name, FILE_TYPE_TXT);
     if (checkitem.code != FILE_CHECK_EXIST) {
         alert('文件不存在');
         return false;
@@ -300,5 +299,26 @@ function deleteFile(name) {
     checkitem.diritems.splice(index, 1);
     //归还磁盘空间;
     fat.freeFileBlocks(checkitem.diritem.begin_num);
+    return true;
+}
 
+function mkdir(name) {
+    let rstOfItem = checkItem(name);
+    if (rstOfItem.code != FILE_CHECK_NOT_EXIST) {
+        alert(rstOfItem.msg);
+        return false;
+    }
+    if (rstOfItem.diritems >= DIRITEM_MAX_LENGTH) {
+        alert('目录满啦！');
+        return false;
+    }
+    let freeBlock = fat.getFreeBlocks(1);
+    if (freeBlock.length < 1) {
+        alert('磁盘空间不足');
+        return false;
+    }
+    fat.setBlock(freeBlock[0], -1);
+    disk.setDir(freeBlock[0]);
+    let diritem = new DirItem(name, FILE_TYPE_DIR, 8, freeBlock[0], 0);
+    rstOfItem.diritems.push(diritem);
 }
