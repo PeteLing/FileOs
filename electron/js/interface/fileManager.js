@@ -35,6 +35,8 @@ const FILE_CHECK_EXIST = 1;
 const FILE_CHECK_PARENT_NOT_EXIST = 2;
 const FILE_CHECK_BUSY = 3;
 
+const getLength = require('../utils/getContentBytesLength');
+
 const path = require('path');
 const DirItem = require('../clazz/DirItem');
 const Fat = require('../clazz/Fat');
@@ -215,6 +217,11 @@ function getBytesLen(val){
     return getLength(val);
 }
 
+//（通过Buffer返回二进制数据的字节长度而不考虑各种编码）
+function getBytesLen(val){
+    return getLength(val);
+}
+
 //返回val在规定字节长度max内的值
 function getByteVal(val, max) {
     var returnValue = '';
@@ -291,7 +298,7 @@ function closeFile(name) {
 function deleteFile(name) {
     let checkitem = checkItem(name, FILE_TYPE_TXT);
     if (checkitem.code != FILE_CHECK_EXIST) {
-        alert('文件不存在');
+        alert(checkitem.msg);
         return false;
     }
     let absoluteName = getCurrentPath() + name;
@@ -330,7 +337,7 @@ function mkdir(name) {
 }
 
 function ls(name) {
-    let rstOfItem = checkItem(name);
+    let rstOfItem = checkItem(name, FILE_TYPE_DIR);
     if (rstOfItem != FILE_CHECK_EXIST) {
         alert(rstOfItem.msg);
         return false;
@@ -339,6 +346,21 @@ function ls(name) {
     return diritems;
 }
 
-function rd() {
-    
+function rd(name) {
+    let rstOfItem = checkItem(name, FILE_TYPE_DIR);
+    if (rstOfItem.code != FILE_CHECK_EXIST) {
+        alert(rstOfItem.msg);
+        return false;
+    }
+    let diritem = disk.getDir(rstOfItem.diritem.begin_num);
+    if (diritem.length > 0) {
+        alert('目录非空');
+        return false;
+    }
+    //删除目录项
+    let index = rstOfItem.diritems.indexOf(rstOfItem.diritem);
+    rstOfItem.diritems.splice(index, 1);
+    //归还磁盘空间;
+    fat.freeFileBlocks(rstOfItem.diritem.begin_num);
+    return true;
 }

@@ -24,10 +24,14 @@ class Disk {
     }
 
     setDir (num) {
+        if (num < 1 || num >= this.length)
+        return false;
         this.blocks[num] = [];
     }
 
     getDir (num) {
+        if (num < 1 || num >= this.length)
+        return false;
         this.blocks[num];
     }
 }
