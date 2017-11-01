@@ -1,11 +1,11 @@
 // 字符串=>二进制
-exports.getContentBytesLength = (content) =>{
+module.exports.getContentBytesLength = (content) =>{
     let buffer = new Buffer(content);
     return buffer.length;
 };
 
 // 将内存以64字节分块
-exports.splitContent = (content) => {
+module.exports.splitContent = (content) => {
     let buffer = new Buffer(content);
     let contentArr = [];
     let length = Math.ceil(buffer.length/64);
@@ -15,4 +15,3 @@ exports.splitContent = (content) => {
     }
     return contentArr;
 };
-

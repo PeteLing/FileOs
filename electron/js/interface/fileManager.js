@@ -30,15 +30,13 @@ const FILE_CHECK_EXIST = 1;
 const FILE_CHECK_PARENT_NOT_EXIST = 2;
 const FILE_CHECK_BUSY = 3;
 
-// const getLength = require('../utils/getContentBytesLength');
-
 const path = require('path');
 const DirItem = require('../clazz/DirItem');
 const Fat = require('../clazz/Fat');
 const OpenFile = require('../clazz/OpenFile');
 const Disk = require('../clazz/Disk');
 
-const getLength = require('../utils/getContentBytesLength');
+const getLength = require('../utils/stringBytes');
 
 let disk = new Disk();
 let fat = new Fat();
