@@ -9,8 +9,12 @@ shutdown.addEventListener('click',()=>{
     }
 });
 
-let file_manager = document.getElementById('file_manager');
-file_manager.addEventListener('dblclick', ()=>{
-    ipcRenderer.send('file_manager');
-});
+// let file_manager = document.getElementById('file_manager');
+// file_manager.addEventListener('click', ()=>{
+//     ipcRenderer.send('file_manager');
+// });
 
+const contextMenu = document.getElementById('file-system');
+contextMenu.addEventListener('contextmenu', function(){
+    ipcRenderer.send('show-context-menu')
+});
