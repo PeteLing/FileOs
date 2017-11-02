@@ -33,54 +33,28 @@
                     <li></li>
                 </ul>
             </div>
-            <div class="content">
-                <article title="文件文件文件文件文件文件文件文件">
-                    <img src="./assets//images/file.png">
-                    <p>文件文件文件文件文件文件文件文件</p>
-                </article>
-                <article>
-                    <img src="./assets//images/file.png">
-                    <p>文件</p>
-                </article>
-                <article>
-                    <img src="./assets//images/file.png">
-                    <p>文件</p>
-                </article>
-                <article>
-                    <img src="./assets//images/file.png">
-                    <p>文件</p>
-                </article>
-                <article>
-                    <img src="./assets//images/file.png">
-                    <p>文件</p>
-                </article>
-                <article>
-                    <img src="./assets//images/file.png">
-                    <p>文件</p>
-                </article>
-                <article>
-                    <img src="./assets//images/file.png">
-                    <p>文件</p>
-                </article>
-                <article>
-                    <img src="./assets//images/file.png">
-                    <p>文件</p>
-                </article>
-                <article>
-                    <img src="./assets//images/file.png">
-                    <p>文件</p>
-                </article>
-                <article>
-                    <img src="./assets//images/file.png">
-                    <p>文件</p>
-                </article>
-                <article>
-                    <img src="./assets//images/TXT.png">
-                    <p>文件</p>
-                </article><article>
-                    <img src="./assets//images/TXT.png">
-                    <p>文件</p>
-                </article>
+            <div id="files_show" class="cell colspan5 content">
+                <div class="show-content" v-on:mousedown="showMenu">
+                    <template v-for="folder in folders">
+                        <div class="files-show-item" v-on:dblclick="enterFolder(folder)" v-on:mousedown="showFolderMenu(event,folder)">
+                            <img class="files-show-img" src="./assets/images/file.png" v-bind:alt="folder.name" v-bind:index="folder.index">
+                            <span class="files-show-text">
+                                        {{folder.name}}
+                                </span>
+                        </div>
+                    </template>
+                    <template v-for="(file,index) in files">
+                        <div class="files-show-item" v-on:dblclick="editFile(file)" v-on:mousedown="showFileMenu(event,file)">
+                            <img class="files-show-img" src="./assets/images/TXT.png" v-bind:alt="file.name" v-bind:index="file.index">
+                            <span class="files-show-text" v-if="!rename || file.index != fileNow.index">
+                                        {{file.name}}
+                                </span>
+                            <span class="files-show-text" v-else>
+                                    <input id="rename" style="width:60px" type="text" v-bind:value="file.name" v-on:blur="renameSuccess(index,$event)">
+                                </span>
+                        </div>
+                    </template>
+                </div>
             </div>
         </div>
     </div>
