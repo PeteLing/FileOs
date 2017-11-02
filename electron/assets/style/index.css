@@ -223,7 +223,8 @@ body {
 }
 
 #file-system table {
-    width: 100%;
+    width: 91%;
+    margin: auto;
     text-align: center;
 }
 
