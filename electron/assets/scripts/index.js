@@ -1,8 +1,48 @@
 window.fs = require('../../js/interface/fileManager.js');
 
+const FILE_TYPE_TXT = 0; //文件类型：txt文件
+const FILE_TYPE_DIR = 1;  //文件类型：子目录
 
+fs.createFile('test', 4);
 drawAFatTable();
 drawAOpenFileTable();
+setWinCurrentPath();
+showDirView('/');
+
+function setWinCurrentPath(path = '/') {
+    let pathviw = document.getElementById('path');
+    pathviw.innerText = path;
+    fs.setCurrentPath(path);
+}
+
+function getWinCurrentPath() {
+    return document.getElementById('path').innerText;
+}
+
+function showDirView(dir) {
+    let content = document.getElementById('file-system').getElementsByClassName('content')[0];
+    content.innerHTML = '';
+    let ary = fs.ls(dir);
+    for (let i = 0 ; i < ary.length ; ++i) {
+        let article = document.createElement('article');
+        article.setAttribute('title', ary[i].name);
+        let img = '';
+        if(ary[i].type == FILE_TYPE_DIR) {
+            article.setAttribute('type', 'dir');
+            img = document.createElement('img');
+            img.setAttribute('src', './assets/images/file.png');
+        } else {
+            article.setAttribute('type', 'txt');
+            img = document.createElement('img');
+            img.setAttribute('src', './assets/images/TXT.png');
+        }
+        let p = document.createElement('p');
+        p.innerText = ary[i].name;
+        article.appendChild(img);
+        article.appendChild(p);
+        content.appendChild(article);
+    }
+}
 
 //自动绘制fat表格
 function drawAFatTable() {
@@ -215,4 +255,51 @@ function keyDownQuery(e) {
         return false;  
     }  
     return true;  
-} 
+}
+
+
+//文件或文件夹双击，单击事件
+let content = document.getElementById('file-system').getElementsByClassName('content')[0];
+content.ondblclick = function (e) {
+    if (e.target.parentElement.getAttribute('type') != 'dir')
+        return;
+    let title = e.target.parentElement.getAttribute('title');
+    if (title == '' || title == null)
+        return;
+    let oldpath = getWinCurrentPath();
+    let newpath = '';
+    if (oldpath[oldpath.length - 1] == '/') {
+        newpath = oldpath + title;
+    } else {
+        newpath = oldpath + '/' + title;
+    }
+    setWinCurrentPath(newpath);
+    showDirView(title);
+}
+content.onclick = function (e) {
+    // console.log(e.target.parentElement.tagName);
+    // if (e.target.parentElement.tagName != 'ARTICLE')
+    //     return;
+    let arts = document.getElementById('file-system').getElementsByClassName('content')[0].getElementsByTagName('article');
+    for (let i = 0 ; i < arts.length ; ++i) {
+        arts[i].setAttribute('class', '');
+    }
+    if (e.target.parentElement.tagName == 'ARTICLE')
+        e.target.parentElement.setAttribute('class', 'selected');
+}
+
+
+//返回上一层目录
+let leftbt = document.getElementById('leftbt');
+leftbt.onclick = function () {
+    let currentpath = getWinCurrentPath();
+    if (currentpath == '/')
+        return;
+    let index = currentpath.lastIndexOf('/');
+    let pre = currentpath.substr(0, index);
+    if (pre == '')
+        pre = '/';
+    setWinCurrentPath('/');
+    showDirView('/');
+    
+}

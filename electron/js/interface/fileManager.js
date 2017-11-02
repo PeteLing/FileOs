@@ -41,6 +41,7 @@ const getLength = require('../utils/stringBytes');
 let disk = new Disk();
 let fat = new Fat();
 let openfile = new OpenFile();
+let currentPath = '/';
 
 //disk初始化 
 let desktopItem = new DirItem('Desktop', FILE_TYPE_DIR, 8, 2, 0);
@@ -50,9 +51,12 @@ fat.setBlock(0, -1);
 fat.setBlock(1, -1);
 fat.setBlock(2, -1);
 // window.fat = fat;
-function getCurrentPath() {
-    let currentPath = '/';
+module.exports.getCurrentPath = function() {
     return currentPath;
+}
+
+module.exports.setCurrentPath = function(path) {
+    currentPath = path;
 }
 
 //判断一个文件是否存在
@@ -71,7 +75,7 @@ function checkItem(name, file_type) {
         code : FILE_CHECK_PARENT_NOT_EXIST,
         msg : 'parent dir doesnot exist'
     }]
-    let currentPath = getCurrentPath().split('/');
+    let currentPath = fs.getCurrentPath().split('/');
     //从根目录开始寻找
     let diritems = disk.blocks[1];
     for (let i = 1 ; i < currentPath.length - 1 ; ++i) {
@@ -98,7 +102,7 @@ function checkItem(name, file_type) {
         }
     }
     //是根目录
-    if (name == '') {
+    if (name == '/') {
         rst[FILE_CHECK_EXIST].diritems = diritems;
         return rst[FILE_CHECK_EXIST];
     }
@@ -147,7 +151,7 @@ module.exports.createFile = function(name, attr) {
     diritems.push(file);
 
     //填写已打开文件表
-    let absoluteName = getCurrentPath() + name;
+    let absoluteName = this.getCurrentPath() + name;
     let oftle = openfile.createOFTLE(absoluteName, attr, freeBlocks[0], 0, FILE_FLAG_WIRTE);
     openfile.push(oftle);
 }
@@ -170,7 +174,7 @@ module.exports.openFile = function(name, flag) {
             return false;
         }
     }
-    let absoluteName = getCurrentPath() + name;
+    let absoluteName = this.getCurrentPath() + name;
     if (openfile.getOFTLE(absoluteName))
         return true;
     let oftle = openfile.createOFTLE(absoluteName, rst.diritem.attr, rst.diritem.begin_num, 1, flag);
@@ -188,7 +192,7 @@ module.exports.openFile = function(name, flag) {
  * @param {*读取长度} length
  */
 module.exports.readFile = function(name, length) {
-    let absoluteName = getCurrentPath() + name;
+    let absoluteName = this.getCurrentPath() + name;
     if (!openfile.getOFTLE(absoluteName)) {
         if(!this.openFile(name, FILE_FLAG_READ))
             return false;
@@ -263,7 +267,7 @@ function sliceStr2Array(val, size) {
  * @param {*写长度} length
  */
 module.exports.writeFile = function(name, buffer, length) {
-    let absoluteName = getCurrentPath() + name;
+    let absoluteName = this.getCurrentPath() + name;
     if (!openfile.getOFTLE(absoluteName)) {
         if(!this.openFile(name, FILE_FLAG_WIRTE))
             return false;
@@ -304,7 +308,7 @@ module.exports.writeFile = function(name, buffer, length) {
 }
 
 module.exports.closeFile = function(name) {
-    let absoluteName = getCurrentPath() + name;
+    let absoluteName = this.getCurrentPath() + name;
     let oftle = openfile.getOFTLE(absoluteName);
     if (oftle == false)
         return true;
@@ -318,7 +322,7 @@ module.exports.deleteFile = function(name) {
         alert(checkitem.msg);
         return false;
     }
-    let absoluteName = getCurrentPath() + name;
+    let absoluteName = this.getCurrentPath() + name;
     let oftle = openfile.getOFTLE(absoluteName);
     if (oftle != false) {
         alert('文件已经打开');
@@ -353,14 +357,14 @@ module.exports.mkdir = function(name) {
     rstOfItem.diritems.push(diritem);
 }
 
-module.exports.ls = function(name = '') {
+module.exports.ls = function(name) {
     let rstOfItem = checkItem(name, FILE_TYPE_DIR);
     if (rstOfItem.code != FILE_CHECK_EXIST) {
         alert(rstOfItem.msg);
         return false;
     }
     let diritems = '';
-    if (name != '') 
+    if (name != '/') 
         diritems = disk.getDir(rstOfItem.diritem.begin_num);
     else 
         diritems = rstOfItem.diritems;

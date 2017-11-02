@@ -256,6 +256,10 @@ body {
     text-align: center;
 }
 
+#file-system .selected {
+    background-color: lightblue;
+}
+
 #edit .content{
     width: 100%;
     height: calc(100% - 69px);
