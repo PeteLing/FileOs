@@ -156,12 +156,12 @@ module.exports.createFile = function(name, attr) {
     diritems.push(file);
 
     //填写已打开文件表
-    let aapath = this.getCurrentPath();
+   /*  let aapath = this.getCurrentPath();
     if (aapath[aapath.length - 1] != '/')
         aapath += '/';
     let absoluteName = aapath + name;
     let oftle = openfile.createOFTLE(absoluteName, attr, freeBlocks[0], 0, FILE_FLAG_WIRTE);
-    openfile.push(oftle);
+    openfile.push(oftle); */
 }
 
 /**
@@ -182,7 +182,10 @@ module.exports.openFile = function(name, flag) {
             return false;
         }
     }
-    let absoluteName = this.getCurrentPath() + name;
+    let oldpath = this.getCurrentPath();
+    if(oldpath[oldpath.length - 1] != '/')
+        oldpath += '/';
+    let absoluteName = oldpath + name;
     if (openfile.getOFTLE(absoluteName))
         return true;
     let oftle = openfile.createOFTLE(absoluteName, rst.diritem.attr, rst.diritem.begin_num, 1, flag);
@@ -200,7 +203,10 @@ module.exports.openFile = function(name, flag) {
  * @param {*读取长度} length
  */
 module.exports.readFile = function(name, length) {
-    let absoluteName = this.getCurrentPath() + name;
+    let oldpath = this.getCurrentPath();
+    if (oldpath[oldpath.length - 1] != '/')
+        oldpath += '/';
+    let absoluteName = oldpath + name;
     if (!openfile.getOFTLE(absoluteName)) {
         if(!this.openFile(name, FILE_FLAG_READ))
             return false;
@@ -316,8 +322,8 @@ module.exports.writeFile = function(name, buffer, length) {
 }
 
 module.exports.closeFile = function(name) {
-    let absoluteName = this.getCurrentPath() + name;
-    let oftle = openfile.getOFTLE(absoluteName);
+    // let absoluteName = this.getCurrentPath() + name;
+    let oftle = openfile.getOFTLE(name);
     if (oftle == false)
         return true;
     openfile.remove(oftle);
@@ -330,7 +336,10 @@ module.exports.deleteFile = function(name) {
         alert(checkitem.msg);
         return false;
     }
-    let absoluteName = this.getCurrentPath() + name;
+    let oldpath = this.getCurrentPath();
+    if (oldpath[oldpath.length - 1] != '/')
+        oldpath += '/';
+    let absoluteName = oldpath + name;
     let oftle = openfile.getOFTLE(absoluteName);
     if (oftle != false) {
         alert('文件已经打开');
@@ -341,6 +350,33 @@ module.exports.deleteFile = function(name) {
     checkitem.diritems.splice(index, 1);
     //归还磁盘空间;
     fat.freeFileBlocks(checkitem.diritem.begin_num);
+    return true;
+}
+
+module.exports.renameFile = function(oldname, newname, type) {
+    if (oldname == newname)
+        return true;
+    let checkitem = checkItem(this.getCurrentPath(), oldname, type);
+    if (checkitem.code != FILE_CHECK_EXIST) {
+        alert(checkitem.msg);
+        return false;
+    }
+    let tcheckitem = checkItem(this.getCurrentPath(), newname, type);
+    if (tcheckitem.code == FILE_CHECK_EXIST) {
+        alert(tcheckitem.msg);
+        return false;
+    }
+    let oldpath = this.getCurrentPath();
+    if (oldpath[oldpath.length - 1] != '/')
+        oldpath += '/';
+    let absoluteName = oldpath + oldname;
+    let oftle = openfile.getOFTLE(absoluteName);
+    if (oftle != false) {
+        alert('文件已经打开');
+        return false;
+    }
+    console.log(checkitem);
+    checkitem.diritem.name = newname;
     return true;
 }
 

@@ -180,7 +180,7 @@ for (let i = 0 ; i < closebts.length ; ++i) {
         if (topNode.getAttribute('id') == 'edit') {
             topNode.getElementsByTagName('textarea')[0].value = '';
             closewindow(topNode);
-            fs.closeFile(path.basename(document.getElementById('title').innerText));
+            fs.closeFile(document.getElementById('title').innerText);
             drawAOpenFileTable();
         } else {
             closewindow(topNode);
@@ -334,6 +334,25 @@ content.onclick = function (e) {
     if (e.target.parentElement.tagName == 'ARTICLE')
         e.target.parentElement.setAttribute('class', 'selected');
 }
+//右键菜单事件
+let myevent = '';
+content.oncontextmenu = function (e) {
+    this.onclick(e);
+    myevent = e;
+    setTimeout(function() {
+        //文件面板右键事件
+        if (e.target.parentElement.tagName != 'ARTICLE') {
+            e.preventDefault();
+            menuCreate.popup(remote.getCurrentWindow());
+        } else {
+        //文件或目录右键事件
+            e.preventDefault();
+            menuFileEdit.popup(remote.getCurrentWindow());
+        }
+    }, 50);
+
+
+}
 
 
 //返回上一层目录按钮
@@ -377,18 +396,27 @@ function newFile() {
             if (inputs[0].value.length <= 0) {
                 content.removeChild(files[i]);
             } else {
-                switch(inputs[0].getAttribute('type')) {
+                console.log(files[i].getAttribute('type'));
+                switch(files[i].getAttribute('type')) {
                     case 'dir' :
-                        fs.mkdir(inputs[0].value);
+                        if (inputs[0].getAttribute('oldname')) {
+                            fs.renameFile(inputs[0].getAttribute('oldname'), inputs[0].value, FILE_TYPE_DIR);
+                        } else {
+                            fs.mkdir(inputs[0].value);
+                            drawAFatTable();
+                            drawAOpenFileTable();
+                        }
                         showDirView('');
-                        drawAFatTable();
-                        drawAOpenFileTable();
                         break;
                     case 'txt' :
-                        fs.createFile(inputs[0].value, 4);
+                        if (inputs[0].getAttribute('oldname')) {
+                            fs.renameFile(inputs[0].getAttribute('oldname'), inputs[0].value, FILE_TYPE_TXT);
+                        } else {
+                            fs.createFile(inputs[0].value, 4);
+                            drawAFatTable();
+                            drawAOpenFileTable();
+                        }
                         showDirView('');
-                        drawAFatTable();
-                        drawAOpenFileTable();
                         break;
                 }
             }
@@ -404,11 +432,11 @@ menuCreate.append(new MenuItem({
     click() {
         let content = document.getElementById('file-system').getElementsByClassName('content')[0];
         let article = document.createElement('article');
-        article.setAttribute('title', 'txt');
+        article.setAttribute('type', 'txt');
         let img = document.createElement('img');
         img.setAttribute('src', './assets/images/txt.png');
         let p = document.createElement('input');
-        p.setAttribute('type', 'txt');
+        // p.setAttribute('type', 'txt');
         article.appendChild(img);
         article.appendChild(p);
         content.appendChild(article);
@@ -420,7 +448,7 @@ menuCreate.append(new MenuItem({
     click() {
         let content = document.getElementById('file-system').getElementsByClassName('content')[0];
         let article = document.createElement('article');
-        article.setAttribute('title', 'dir');
+        article.setAttribute('type', 'dir');
         let img = document.createElement('img');
         img.setAttribute('src', './assets/images/file.png');
         let p = document.createElement('input');
@@ -435,21 +463,35 @@ menuCreate.append(new MenuItem({
 /*文件的菜单*/
 const menuFileEdit = new Menu();
 menuFileEdit.append(new MenuItem({
-    label: '编辑',
-    click: function () {
-
+    label: '打开',
+    click() {
+        document.getElementById('file-system').getElementsByClassName('content')[0].ondblclick(myevent);
     }
 }));
 menuFileEdit.append(new MenuItem({
     label: '重命名',
     click() {
-
+        let node = myevent.target.parentElement;
+        let input = document.createElement('input');
+        input.value = node.getElementsByTagName('p')[0].innerText;
+        input.setAttribute('oldname', input.value);
+        node.removeChild(node.getElementsByTagName('p')[0]);
+        node.appendChild(input);
+        input.focus();
     }
 }));
 menuFileEdit.append(new MenuItem({
     label: '删除',
     click() {
-
+        // console.log(myevent.target.parentElement.getAttribute('title'));
+        if (myevent.target.parentElement.getAttribute('type') == 'txt') {
+            fs.deleteFile(myevent.target.parentElement.getAttribute('title'));
+        } else if(myevent.target.parentElement.getAttribute('type') == 'dir') {
+            fs.rd(myevent.target.parentElement.getAttribute('title'));
+        }
+        drawAFatTable();
+        showDirView('');
+        // drawAOpenFileTable();
     }
 }));
 menuFileEdit.append(new MenuItem({
@@ -460,16 +502,16 @@ menuFileEdit.append(new MenuItem({
 }));
 
 //绑定右键菜单事件
-const fs_content = document.getElementById('file-system').getElementsByClassName('content')[0];
-fs_content.addEventListener('contextmenu', (e) => {
-    e.preventDefault()
-    menuCreate.popup(remote.getCurrentWindow())
-}, false)
+// const fs_content = document.getElementById('file-system').getElementsByClassName('content')[0];
+// fs_content.addEventListener('contextmenu', (e) => {
+//     e.preventDefault()
+//     menuCreate.popup(remote.getCurrentWindow())
+// }, false)
 
-const files_menu = document.getElementById('file-system').getElementsByTagName('article');
+/* const files_menu = document.getElementById('file-system').getElementsByTagName('article');
 for (let i = 0 ; i < files_menu.length ; ++i) {
     files_menu[i].addEventListener('contextmenu', (e) => {
         e.preventDefault();
         menuFileEdit.popup(remote.getCurrentWindow());
     })
-}
+} */

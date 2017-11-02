@@ -9,26 +9,3 @@ shutdown.addEventListener('click',()=>{
         ipcRenderer.send('shutdown');
     }
 });
-<<<<<<< HEAD
-=======
-
-// let file_manager = document.getElementById('file_manager');
-// file_manager.addEventListener('click', ()=>{
-//     ipcRenderer.send('file_manager');
-// });
-
-const contextMenu = document.getElementById('file-system');
-contextMenu.addEventListener('contextmenu', function(){
-    ipcRenderer.send('show-context-menu')
-});
-
-const isFile = document.getElementsByClassName('');
-isFile.addEventListener('contextmenu', function(){
-    ipcRenderer.send('show-menuFileEdit')
-});
-
-const isFolder = document.getElementsByClassName('');
-isFolder.addEventListener('contextmenu', function () {
-    ipcRenderer.send('show-menuFolderEdit')
-});
->>>>>>> e58583a8c15942716edd433274d6bb40cb190a88
