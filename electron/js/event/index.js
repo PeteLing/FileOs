@@ -4,6 +4,7 @@ const ipcRenderer = electron.ipcRenderer; //进程通信
 
 const Vue = require('vue/dist/vue.min'); //引入Vuejs
 
+const fileManger = require('../interface/fileManager');
 let shutdown = document.getElementById('shutdown');
 shutdown.addEventListener('click',()=>{
     if (confirm('是否关机?')){
@@ -108,7 +109,7 @@ const menuCreate = new Menu();
 menuCreate.append(new MenuItem({
     label: '新建文件',
     click() {
-
+        fileManger.createFile('123', 4)
     }
 }));
 menuCreate.append(new MenuItem({

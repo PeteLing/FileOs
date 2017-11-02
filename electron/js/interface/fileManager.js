@@ -150,6 +150,7 @@ module.exports.createFile = function(name, attr) {
     let absoluteName = getCurrentPath() + name;
     let oftle = openfile.createOFTLE(absoluteName, attr, freeBlocks[0], 0, FILE_FLAG_WIRTE);
     openfile.push(oftle);
+    return file;
 }
 
 /**
