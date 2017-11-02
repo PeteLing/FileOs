@@ -1,5 +1,7 @@
 window.fs = require('../../js/interface/fileManager.js');
 const path = require('path');
+const {remote} = require('electron')
+const {Menu, MenuItem} = remote
 
 const FILE_TYPE_TXT = 0; //文件类型：txt文件
 const FILE_TYPE_DIR = 1;  //文件类型：子目录
@@ -294,8 +296,9 @@ content.ondblclick = function (e) {
         } else {
             newpath = oldpath + '/' + title;
         }
-        setWinCurrentPath(newpath);
+        // console.log(title);
         showDirView(title);
+        setWinCurrentPath(newpath);
     } else if(e.target.parentElement.getAttribute('type') == 'txt'){
         //获取文件名
         let name = e.target.parentElement.getAttribute('title');
@@ -323,6 +326,7 @@ content.ondblclick = function (e) {
 }
 //文件或文件夹单击事件
 content.onclick = function (e) {
+    newFile();
     let arts = document.getElementById('file-system').getElementsByClassName('content')[0].getElementsByTagName('article');
     for (let i = 0 ; i < arts.length ; ++i) {
         arts[i].setAttribute('class', '');
@@ -342,8 +346,9 @@ leftbt.onclick = function () {
     let pre = currentpath.substr(0, index);
     if (pre == '')
         pre = '/';
-    setWinCurrentPath('/');
-    showDirView('/');   
+    console.log(pre, name);
+    setWinCurrentPath(pre);
+    showDirView('');   
 }
 
 //进入下一层目录按钮
@@ -360,7 +365,111 @@ rightbt.onclick = function () {
         currentpath = '';
     let newpath = currentpath + '/' + article.getAttribute('title');
     setWinCurrentPath(newpath);
-    showDirView(article.getAttribute('title'))
+    showDirView('');
 }
 
-//新建文件
+function newFile() {
+    let content = document.getElementById('file-system').getElementsByClassName('content')[0];
+    let files = document.getElementById('file-system').getElementsByTagName('article');
+    for (let i = 0 ; i < files.length ; ++i) {
+        let inputs = files[i].getElementsByTagName('input');
+        if (inputs.length > 0) {
+            if (inputs[0].value.length <= 0) {
+                content.removeChild(files[i]);
+            } else {
+                switch(inputs[0].getAttribute('type')) {
+                    case 'dir' :
+                        fs.mkdir(inputs[0].value);
+                        showDirView('');
+                        drawAFatTable();
+                        drawAOpenFileTable();
+                        break;
+                    case 'txt' :
+                        fs.createFile(inputs[0].value, 4);
+                        showDirView('');
+                        drawAFatTable();
+                        drawAOpenFileTable();
+                        break;
+                }
+            }
+        }
+    }
+
+}
+
+/*新建文件或文件夹的菜单*/
+const menuCreate = new Menu();
+menuCreate.append(new MenuItem({
+    label: '新建文件',
+    click() {
+        let content = document.getElementById('file-system').getElementsByClassName('content')[0];
+        let article = document.createElement('article');
+        article.setAttribute('title', 'txt');
+        let img = document.createElement('img');
+        img.setAttribute('src', './assets/images/txt.png');
+        let p = document.createElement('input');
+        p.setAttribute('type', 'txt');
+        article.appendChild(img);
+        article.appendChild(p);
+        content.appendChild(article);
+        p.focus();
+    }
+}));
+menuCreate.append(new MenuItem({
+    label: '新建文件夹',
+    click() {
+        let content = document.getElementById('file-system').getElementsByClassName('content')[0];
+        let article = document.createElement('article');
+        article.setAttribute('title', 'dir');
+        let img = document.createElement('img');
+        img.setAttribute('src', './assets/images/file.png');
+        let p = document.createElement('input');
+        p.setAttribute('type', 'dir');
+        article.appendChild(img);
+        article.appendChild(p);
+        content.appendChild(article);
+        p.focus();
+    }
+}));
+
+/*文件的菜单*/
+const menuFileEdit = new Menu();
+menuFileEdit.append(new MenuItem({
+    label: '编辑',
+    click: function () {
+
+    }
+}));
+menuFileEdit.append(new MenuItem({
+    label: '重命名',
+    click() {
+
+    }
+}));
+menuFileEdit.append(new MenuItem({
+    label: '删除',
+    click() {
+
+    }
+}));
+menuFileEdit.append(new MenuItem({
+    label: '属性',
+    click() {
+
+    }
+}));
+
+//绑定右键菜单事件
+const fs_content = document.getElementById('file-system').getElementsByClassName('content')[0];
+fs_content.addEventListener('contextmenu', (e) => {
+    e.preventDefault()
+    menuCreate.popup(remote.getCurrentWindow())
+}, false)
+
+const files_menu = document.getElementById('file-system').getElementsByTagName('article');
+for (let i = 0 ; i < files_menu.length ; ++i) {
+    files_menu[i].addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        menuFileEdit.popup(remote.getCurrentWindow());
+    })
+}

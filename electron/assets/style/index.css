@@ -257,8 +257,9 @@ body {
     height: 48px;
 }
 
-#file-system article p {
+#file-system article p,#file-system article input {
     margin: 0;
+    width: 100%;
     white-space:nowrap; 
     text-overflow:ellipsis; 
     overflow:hidden;

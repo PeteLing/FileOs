@@ -89,8 +89,8 @@ ipcMain.on('edit_file', ()=>{
 const menuCreate = new Menu();
 menuCreate.append(new MenuItem({
     label: '新建文件',
-    click() {
-
+    click: function () {
+        console.log('test');
     }
 }));
 menuCreate.append(new MenuItem({
@@ -104,7 +104,7 @@ menuCreate.append(new MenuItem({
 const menuFileEdit = new Menu();
 menuFileEdit.append(new MenuItem({
     label: '编辑',
-    click() {
+    click: function () {
 
     }
 }));

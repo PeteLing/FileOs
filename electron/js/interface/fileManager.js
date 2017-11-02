@@ -78,8 +78,10 @@ function checkItem(path, name, file_type) {
     let currentPath = path.split('/');
     //从根目录开始寻找
     let diritems = disk.blocks[1];
-    for (let i = 1 ; i < currentPath.length - 1 ; ++i) {
+    for (let i = 1 ; i < currentPath.length; ++i) {
         if (currentPath[i] == '') {
+            if (name == '/' || name == '')
+                break;
             for (let j = 0 ; j < diritems.length ; ++j) {
                 if (diritems[j].type == file_type && diritems[j].name == name) {
                     rst[FILE_CHECK_EXIST].diritem = diritems[j];
@@ -90,19 +92,21 @@ function checkItem(path, name, file_type) {
             rst[FILE_CHECK_NOT_EXIST].diritems = diritems;
             return rst[FILE_CHECK_NOT_EXIST];
         }
+        let flag = true;
         for (let j = 0 ; j < diritems.length ; ++j) {
             if (diritems[j].type == FILE_TYPE_DIR && diritems[j].name == currentPath[i]) {
                 diritems = disk.blocks[diritems[j].begin_num];
+                flag = false;
                 break;
             }
         }
         //父目录不存在
-        if (j >= diritems.length) {
+        if (flag) {
             return rst[FILE_CHECK_PARENT_NOT_EXIST];
         }
     }
     //是根目录
-    if (name == '/') {
+    if (name == '/' || name == '') {
         rst[FILE_CHECK_EXIST].diritems = diritems;
         return rst[FILE_CHECK_EXIST];
     }
@@ -152,7 +156,10 @@ module.exports.createFile = function(name, attr) {
     diritems.push(file);
 
     //填写已打开文件表
-    let absoluteName = this.getCurrentPath() + name;
+    let aapath = this.getCurrentPath();
+    if (aapath[aapath.length - 1] != '/')
+        aapath += '/';
+    let absoluteName = aapath + name;
     let oftle = openfile.createOFTLE(absoluteName, attr, freeBlocks[0], 0, FILE_FLAG_WIRTE);
     openfile.push(oftle);
 }
@@ -365,7 +372,7 @@ module.exports.ls = function(name) {
         return false;
     }
     let diritems = '';
-    if (name != '/') 
+    if (name != '/' && name != '') 
         diritems = disk.getDir(rstOfItem.diritem.begin_num);
     else 
         diritems = rstOfItem.diritems;
