@@ -282,7 +282,7 @@ savebt.onclick = function () {
     drawAFatTable();
 }
 
-//文件或文件夹双击，单击事件
+//文件或文件夹双击事件
 let content = document.getElementById('file-system').getElementsByClassName('content')[0];
 content.ondblclick = function (e) {
     if (e.target.parentElement.getAttribute('type') == 'dir') {
@@ -321,10 +321,8 @@ content.ondblclick = function (e) {
         editwin.click();
     }
 }
+//文件或文件夹单击事件
 content.onclick = function (e) {
-    // console.log(e.target.parentElement.tagName);
-    // if (e.target.parentElement.tagName != 'ARTICLE')
-    //     return;
     let arts = document.getElementById('file-system').getElementsByClassName('content')[0].getElementsByTagName('article');
     for (let i = 0 ; i < arts.length ; ++i) {
         arts[i].setAttribute('class', '');
@@ -364,3 +362,5 @@ rightbt.onclick = function () {
     setWinCurrentPath(newpath);
     showDirView(article.getAttribute('title'))
 }
+
+//新建文件

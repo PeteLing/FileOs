@@ -27,6 +27,7 @@ body {
     cursor: pointer;
 }
 
+
 #win-menu {
     position: fixed;
     bottom: 46px;
@@ -38,6 +39,10 @@ body {
     z-index: 999;
     overflow-y: hidden;
     transition: bottom 0.3s;
+}
+
+#win-menu .content p {
+    font-size: 14px;
 }
 
 .warp {
@@ -65,13 +70,17 @@ body {
 
 #win-menu .blocks {
     float: right;
-    width: 400px;;
+    width: 350px;;
     padding:0 10px;
     padding-top: 5px;
     font-size: 12px;
     height: 100%;
     -webkit-animation-duration: 0.5s;
     animation-duration: 0.5s;
+}
+
+#win-menu img:hover {
+    border: 2px solid white;
 }
 
 #win-menu .blocks .title,#win-menu .blocks .content {
