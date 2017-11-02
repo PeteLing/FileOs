@@ -333,6 +333,18 @@ content.onclick = function (e) {
     }
     if (e.target.parentElement.tagName == 'ARTICLE')
         e.target.parentElement.setAttribute('class', 'selected');
+
+}
+//回车事件
+content.onkeydown = function (e) {
+    // 兼容FF和IE和Opera  
+    var theEvent = e || window.event;  
+    var code = theEvent.keyCode || theEvent.which || theEvent.charCode;  
+    if (code == 13) {   
+        newFile();
+        return false;  
+    }  
+    return true;  
 }
 //右键菜单事件
 let myevent = '';
@@ -350,9 +362,8 @@ content.oncontextmenu = function (e) {
             menuFileEdit.popup(remote.getCurrentWindow());
         }
     }, 50);
-
-
 }
+
 
 
 //返回上一层目录按钮
@@ -500,18 +511,3 @@ menuFileEdit.append(new MenuItem({
 
     }
 }));
-
-//绑定右键菜单事件
-// const fs_content = document.getElementById('file-system').getElementsByClassName('content')[0];
-// fs_content.addEventListener('contextmenu', (e) => {
-//     e.preventDefault()
-//     menuCreate.popup(remote.getCurrentWindow())
-// }, false)
-
-/* const files_menu = document.getElementById('file-system').getElementsByTagName('article');
-for (let i = 0 ; i < files_menu.length ; ++i) {
-    files_menu[i].addEventListener('contextmenu', (e) => {
-        e.preventDefault();
-        menuFileEdit.popup(remote.getCurrentWindow());
-    })
-} */
