@@ -60,7 +60,7 @@ module.exports.setCurrentPath = function(path) {
 }
 
 //判断一个文件是否存在
-function checkItem(name, file_type) {
+function checkItem(path, name, file_type) {
     //返回信息
     let rst = [{
         code : FILE_CHECK_NOT_EXIST,
@@ -75,7 +75,7 @@ function checkItem(name, file_type) {
         code : FILE_CHECK_PARENT_NOT_EXIST,
         msg : 'parent dir doesnot exist'
     }]
-    let currentPath = fs.getCurrentPath().split('/');
+    let currentPath = path.split('/');
     //从根目录开始寻找
     let diritems = disk.blocks[1];
     for (let i = 1 ; i < currentPath.length - 1 ; ++i) {
@@ -125,7 +125,7 @@ module.exports.createFile = function(name, attr) {
         return false;
     }
     //判断是否父目录存在，是否文件重名
-    let rstOfRegister = checkItem(name, FILE_TYPE_TXT);
+    let rstOfRegister = checkItem(this.getCurrentPath(), name, FILE_TYPE_TXT);
     if (rstOfRegister.code != FILE_CHECK_NOT_EXIST) {
         console.log(rstOfRegister.msg);
         alert(rstOfRegister.msg);
@@ -162,7 +162,7 @@ module.exports.createFile = function(name, attr) {
  * @param {*操作类型：读/写} flag
  */
 module.exports.openFile = function(name, flag) {
-    let rst = checkItem(name, FILE_TYPE_TXT);
+    let rst = checkItem(this.getCurrentPath(), name, FILE_TYPE_TXT);
     if (rst.code != FILE_CHECK_EXIST) {
         alert(rst.msg);
         return false;
@@ -302,7 +302,7 @@ module.exports.writeFile = function(name, buffer, length) {
     //修改已打开文件表
     oftle.length = byteLen;
     //修改目录项
-    let item = checkItem(name, FILE_TYPE_TXT);
+    let item = checkItem(this.getCurrentPath(), name, FILE_TYPE_TXT);
     item.diritem.setSize(size);
     return true;
 }
@@ -317,7 +317,7 @@ module.exports.closeFile = function(name) {
 }
 
 module.exports.deleteFile = function(name) {
-    let checkitem = checkItem(name, FILE_TYPE_TXT);
+    let checkitem = checkItem(this.getCurrentPath(), name, FILE_TYPE_TXT);
     if (checkitem.code != FILE_CHECK_EXIST) {
         alert(checkitem.msg);
         return false;
@@ -337,7 +337,7 @@ module.exports.deleteFile = function(name) {
 }
 
 module.exports.mkdir = function(name) {
-    let rstOfItem = checkItem(name);
+    let rstOfItem = checkItem(this.getCurrentPath(), name, FILE_TYPE_DIR);
     if (rstOfItem.code != FILE_CHECK_NOT_EXIST) {
         alert(rstOfItem.msg);
         return false;
@@ -358,7 +358,7 @@ module.exports.mkdir = function(name) {
 }
 
 module.exports.ls = function(name) {
-    let rstOfItem = checkItem(name, FILE_TYPE_DIR);
+    let rstOfItem = checkItem(this.getCurrentPath(), name, FILE_TYPE_DIR);
     if (rstOfItem.code != FILE_CHECK_EXIST) {
         alert(rstOfItem.msg);
         return false;
@@ -372,7 +372,7 @@ module.exports.ls = function(name) {
 }
 
 module.exports.rd = function(name) {
-    let rstOfItem = checkItem(name, FILE_TYPE_DIR);
+    let rstOfItem = checkItem(this.getCurrentPath(), name, FILE_TYPE_DIR);
     if (rstOfItem.code != FILE_CHECK_EXIST) {
         alert(rstOfItem.msg);
         return false;

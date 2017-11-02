@@ -158,5 +158,5 @@ menuFolderEdit.append(new MenuItem({
 
 ipcMain.on('show-context-menu', function (event) {
     const win = BrowserWindow.fromWebContents(event.sender);
-    menuFolderEdit.popup(win);
+    menuCreate.popup(win);
 });

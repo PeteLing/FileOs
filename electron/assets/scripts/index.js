@@ -6,10 +6,10 @@ const FILE_TYPE_DIR = 1;  //文件类型：子目录
 fs.createFile('test', 4);
 drawAFatTable();
 drawAOpenFileTable();
-setWinCurrentPath();
+setWinCurrentPath('/');
 showDirView('/');
 
-function setWinCurrentPath(path = '/') {
+function setWinCurrentPath(path) {
     let pathviw = document.getElementById('path');
     pathviw.innerText = path;
     fs.setCurrentPath(path);
@@ -261,20 +261,22 @@ function keyDownQuery(e) {
 //文件或文件夹双击，单击事件
 let content = document.getElementById('file-system').getElementsByClassName('content')[0];
 content.ondblclick = function (e) {
-    if (e.target.parentElement.getAttribute('type') != 'dir')
-        return;
-    let title = e.target.parentElement.getAttribute('title');
-    if (title == '' || title == null)
-        return;
-    let oldpath = getWinCurrentPath();
-    let newpath = '';
-    if (oldpath[oldpath.length - 1] == '/') {
-        newpath = oldpath + title;
+    if (e.target.parentElement.getAttribute('type') == 'dir') {
+        let title = e.target.parentElement.getAttribute('title');
+        if (title == '' || title == null)
+            return;
+        let oldpath = getWinCurrentPath();
+        let newpath = '';
+        if (oldpath[oldpath.length - 1] == '/') {
+            newpath = oldpath + title;
+        } else {
+            newpath = oldpath + '/' + title;
+        }
+        setWinCurrentPath(newpath);
+        showDirView(title);
     } else {
-        newpath = oldpath + '/' + title;
+        
     }
-    setWinCurrentPath(newpath);
-    showDirView(title);
 }
 content.onclick = function (e) {
     // console.log(e.target.parentElement.tagName);
@@ -289,7 +291,7 @@ content.onclick = function (e) {
 }
 
 
-//返回上一层目录
+//返回上一层目录按钮
 let leftbt = document.getElementById('leftbt');
 leftbt.onclick = function () {
     let currentpath = getWinCurrentPath();
@@ -300,6 +302,22 @@ leftbt.onclick = function () {
     if (pre == '')
         pre = '/';
     setWinCurrentPath('/');
-    showDirView('/');
-    
+    showDirView('/');   
+}
+
+//进入下一层目录按钮
+let rightbt = document.getElementById('rightbt');
+rightbt.onclick = function () {
+    let selected = document.getElementsByClassName('selected');
+    if (selected.length <= 0)
+        return;
+    let article = selected[0];
+    if (article.getAttribute('type') != 'dir')
+        return;
+    let currentpath = getWinCurrentPath();
+    if (currentpath == '/')
+        currentpath = '';
+    let newpath = currentpath + '/' + article.getAttribute('title');
+    setWinCurrentPath(newpath);
+    showDirView(article.getAttribute('title'))
 }
