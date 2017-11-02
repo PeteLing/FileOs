@@ -1,3 +1,45 @@
+window.fs = require('../../js/interface/fileManager.js');
+
+
+drawAFatTable();
+drawAOpenFileTable();
+
+//自动绘制fat表格
+function drawAFatTable() {
+    let blocks = fs.fat.getBlocks();
+    let table = document.getElementById('fat');
+    for (let i = 0 ; i < 16 ; ++i) {
+        let tr = document.createElement('tr');
+        for (let j = 0 ; j < 8 ; ++j) {
+            let td = document.createElement('td');
+            td.innerHTML= blocks[i * 8 + j];
+            if (td.innerHTML != 0) {
+                td.setAttribute('class', 'busy');
+            }
+            tr.appendChild(td);
+        }
+        table.appendChild(tr);
+    }
+}
+
+//自动绘制已打开文件表格
+function drawAOpenFileTable() {
+    let openfiles = fs.openfile.getAll();
+    let table = document.getElementById('openfile');
+    let tr = document.createElement('tr');
+    tr.innerHTML = '<th>name</th><th>attr</th><th>num</th><th>flag</th>'
+    table.appendChild(tr);
+    for (let i = 0 ; i < openfiles.length ; ++i) {
+        tr = document.createElement('tr');
+        tr.innerHTML = "<td>" + openfiles[i].name + "</td>" +
+        "<td>" + openfiles[i].attribute + "</td>" +
+        "<td>" + openfiles[i].number + "</td>" +
+        "<td>" + openfiles[i].flag + "</td>"
+        table.appendChild(tr);
+    }
+}
+
+
 var winbt = document.getElementById('winbt');
 winbt.onclick = function () {
     var win_menu = document.getElementById('win-menu');

@@ -222,6 +222,19 @@ body {
     overflow: auto;
 }
 
+#file-system table {
+    width: 100%;
+    text-align: center;
+}
+
+#fat td {
+    width: 12.5%;
+}
+
+#file-system .busy{
+    background: lightcoral;
+}
+
 #file-system article {
     margin: 8px;
     width: 13%;

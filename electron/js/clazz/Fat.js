@@ -63,6 +63,10 @@ class Fat {
         }
         this.blocksArr[index] = 0;
     }
+
+    getBlocks() {
+        return this.blocksArr;
+    }
 }
 
 

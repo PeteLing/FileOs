@@ -49,6 +49,10 @@ let openfile = function () {
         }
         return false;
     }
+
+    this.getAll = function () {
+        return this.OFTLE;
+    }
 }
 
 module.exports = openfile;
