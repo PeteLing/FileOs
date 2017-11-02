@@ -145,6 +145,7 @@ module.exports.createFile = function(name, attr) {
         return false;
     }
     fat.setBlock(freeBlocks[0], -1);
+    disk.setContent(freeBlocks[0], '');
 
     //登记到目录项
     let file = new DirItem(name, FILE_TYPE_TXT, attr, freeBlocks[0], 0);
@@ -200,10 +201,10 @@ module.exports.readFile = function(name, length) {
     let oftle = openfile.getOFTLE(absoluteName);
     if (oftle == false)
         return false;
-    if (oftle.flag == FILE_FLAG_WIRTE) {
-        alert('不能已写方式打开文件');
-        return false;
-    }
+    // if (oftle.flag == FILE_FLAG_WIRTE) {
+    //     alert('不能已写方式打开文件');
+    //     return false;
+    // }
     let fileblocks = fat.getFileBlocks(oftle.number);
     let content = '';
     for (let i = 0 ; i < fileblocks.length ; ++i) {

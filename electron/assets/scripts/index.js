@@ -1,4 +1,5 @@
 window.fs = require('../../js/interface/fileManager.js');
+const path = require('path');
 
 const FILE_TYPE_TXT = 0; //文件类型：txt文件
 const FILE_TYPE_DIR = 1;  //文件类型：子目录
@@ -48,6 +49,7 @@ function showDirView(dir) {
 function drawAFatTable() {
     let blocks = fs.fat.getBlocks();
     let table = document.getElementById('fat');
+    table.innerHTML = '';
     for (let i = 0 ; i < 16 ; ++i) {
         let tr = document.createElement('tr');
         for (let j = 0 ; j < 8 ; ++j) {
@@ -66,6 +68,7 @@ function drawAFatTable() {
 function drawAOpenFileTable() {
     let openfiles = fs.openfile.getAll();
     let table = document.getElementById('openfile');
+    table.innerHTML = '';
     let tr = document.createElement('tr');
     tr.innerHTML = '<th>name</th><th>attr</th><th>num</th><th>flag</th>'
     table.appendChild(tr);
@@ -160,14 +163,22 @@ function fullscreen(obj) {
 }
 
 //关闭
+function closewindow(id) {
+    min(id);
+}
 var closebts = document.getElementsByClassName('closebt');
 for (let i = 0 ; i < closebts.length ; ++i) {
     closebts[i].onclick = function () {
-        closewindow(this.parentNode.parentNode.parentNode.parentNode)
+        let topNode = this.parentNode.parentNode.parentNode.parentNode;
+        if (topNode.getAttribute('id') == 'edit') {
+            topNode.getElementsByTagName('textarea')[0].value = '';
+            closewindow(topNode);
+            fs.closeFile(path.basename(document.getElementById('title').innerText));
+            drawAOpenFileTable();
+        } else {
+            closewindow(topNode);
+        }
     }
-}
-function closewindow(id) {
-    min(id);
 }
 
 
@@ -257,14 +268,20 @@ function keyDownQuery(e) {
     return true;  
 }
 
+//写入文件的保存按钮
+var savebt = document.getElementById('save');
+savebt.onclick = function () {
+    let title = path.basename(document.getElementById('title').innerText);
+    let buffer = document.getElementById('edit').getElementsByTagName('textarea')[0].value;
+    fs.writeFile(title, buffer, 123);
+    drawAFatTable();
+}
 
 //文件或文件夹双击，单击事件
 let content = document.getElementById('file-system').getElementsByClassName('content')[0];
 content.ondblclick = function (e) {
     if (e.target.parentElement.getAttribute('type') == 'dir') {
         let title = e.target.parentElement.getAttribute('title');
-        if (title == '' || title == null)
-            return;
         let oldpath = getWinCurrentPath();
         let newpath = '';
         if (oldpath[oldpath.length - 1] == '/') {
@@ -274,8 +291,28 @@ content.ondblclick = function (e) {
         }
         setWinCurrentPath(newpath);
         showDirView(title);
-    } else {
-        
+    } else if(e.target.parentElement.getAttribute('type') == 'txt'){
+        //获取文件名
+        let name = e.target.parentElement.getAttribute('title');
+        let path = getWinCurrentPath();
+        let absoluteName = '';
+        if (path[path.length - 1] == '/') {
+            absoluteName = path + name;
+        } else {
+            absoluteName = path + '/' + name;
+        }
+        //获取文件内容
+        let val = fs.readFile(name, 123);
+        if (val === false) {
+            console.log('读取文件失败');
+            return;
+        }
+
+        let editwin = document.getElementById('edit');
+        document.getElementById('title').innerText = absoluteName;
+        document.getElementsByTagName('textarea')[0].value = val;
+        editwin.style.display = 'block';
+        editwin.click();
     }
 }
 content.onclick = function (e) {
