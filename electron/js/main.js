@@ -160,3 +160,15 @@ ipcMain.on('show-context-menu', function (event) {
     const win = BrowserWindow.fromWebContents(event.sender);
     menuCreate.popup(win);
 });
+
+
+ipcMain.on('show-menuFileEdit', function (event) {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    menuFileEdit.popup(win);
+});
+
+
+ipcMain.on('show-menuFolderEdit', function (event) {
+    const win = BrowserWindow.fromWebContents(event.sender);
+    menuFolderEdit.popup(win);
+});

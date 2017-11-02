@@ -18,3 +18,13 @@ const contextMenu = document.getElementById('file-system');
 contextMenu.addEventListener('contextmenu', function(){
     ipcRenderer.send('show-context-menu')
 });
+
+const isFile = document.getElementsByClassName('');
+isFile.addEventListener('contextmenu', function(){
+    ipcRenderer.send('show-menuFileEdit')
+});
+
+const isFolder = document.getElementsByClassName('');
+isFolder.addEventListener('contextmenu', function () {
+    ipcRenderer.send('show-menuFolderEdit')
+});
