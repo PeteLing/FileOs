@@ -106,7 +106,7 @@ var filebt = document.getElementById('filebt');
 filebt.onclick = function () {
     var fs = document.getElementById('file-system');
     if (fs.style.display == 'none') {
-        fs.onclick();
+        fs.click();
         fs.style.display = 'block';
     } else {
         fs.style.display = 'none';
@@ -116,7 +116,7 @@ var cmdbt = document.getElementById('cmdbt');
 cmdbt.onclick = function() {
     var cmd = document.getElementById('terminal');
     if (cmd.style.display == 'none') {
-        cmd.onclick();
+        cmd.click();
         cmd.style.display = 'block';
         let inputs = cmd.getElementsByTagName('input');
         inputs[inputs.length - 1].focus();
@@ -162,9 +162,14 @@ function fullscreen(obj) {
     }
 }
 
+
 //关闭
-function closewindow(id) {
-    min(id);
+function closewindow(obj) {
+    if (obj.style.display == 'none') {
+        obj.style.display = 'block';
+    } else {
+        obj.style.display = 'none';
+    }
 }
 var closebts = document.getElementsByClassName('closebt');
 for (let i = 0 ; i < closebts.length ; ++i) {
@@ -307,6 +312,7 @@ content.ondblclick = function (e) {
             console.log('读取文件失败');
             return;
         }
+        drawAOpenFileTable();
 
         let editwin = document.getElementById('edit');
         document.getElementById('title').innerText = absoluteName;

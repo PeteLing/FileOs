@@ -274,10 +274,10 @@ module.exports.writeFile = function(name, buffer, length) {
             return false;
     }
     let oftle = openfile.getOFTLE(absoluteName);
-    if (oftle.flag != FILE_FLAG_WIRTE) {
-        alert('不能以读方式写文件');
-        return false;
-    }
+    // if (oftle.flag != FILE_FLAG_WIRTE) {
+    //     alert('不能以读方式写文件');
+    //     return false;
+    // }
     let byteLen = getByteLen(buffer);
     let size = Math.ceil(byteLen / BLOCK_SIZE)
     let fileBlocks = fat.getFileBlocks(oftle.number);
