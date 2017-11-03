@@ -310,7 +310,7 @@ module.exports.writeFile = function(name, buffer, length) {
 
     } else {
         fat.freeFileBlocks(oftle.number);
-        fileBlocks.splice(0, size);
+        fileBlocks = fileBlocks.splice(0, size);
     }
     let newBlocks = fileBlocks.concat(freeBlocks);
     newBlocks.push(-1);
