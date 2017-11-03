@@ -49,10 +49,23 @@ function showDirView(dir) {
     }
 }
 
-function showDirTree() {
+function showDirTree(cpath = '') {
+    if (cpath == '') {
     let tree = document.getElementById('file-system').getElementsByClassName('tree')[0].getElementsByTagName('ul')[0];
     tree.innerHTML = "<li><img src='./assets/images/plus.png' /><span full='/'>/</span></li>";
+        return;
+    }
+    let spans = document.getElementById('file-system').getElementsByTagName('span');
+    for (let i = 0 ; i < spans.length ; ++i) {
+        // console.log(spans[i].getAttribute('full'))
+        if (spans[i].getAttribute('full') == cpath) {
+            // console.log('here' + spans[i].parentElement);
+            spans[i].parentElement.firstChild.click();
+            spans[i].parentElement.firstChild.click();
+        }
+    }
 }
+
 let tree_ul = document.getElementById('file-system').getElementsByClassName('tree')[0].getElementsByTagName('ul')[0];
 tree_ul.onclick = function (e) {
     console.log(e.target.tagName);
@@ -521,6 +534,7 @@ function newFile() {
                             drawAOpenFileTable();
                         }
                         showDirView('');
+                        showDirTree(getWinCurrentPath());
                         break;
                     case 'txt' :
                         if (inputs[0].getAttribute('oldname')) {
@@ -672,6 +686,7 @@ menuFolderEdit.append(new MenuItem({
             fs.rd(myevent.target.parentElement.getAttribute('title'));
         drawAFatTable();
         showDirView('');
+        showDirTree(getWinCurrentPath());
         // drawAOpenFileTable();
     }
 }));
