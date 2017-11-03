@@ -12,6 +12,7 @@ drawAOpenFileTable();
 setWinCurrentPath('/');
 showDirView('/');
 updateBottomNav();
+showDirTree();
 
 function setWinCurrentPath(path) {
     let pathviw = document.getElementById('path');
@@ -47,6 +48,63 @@ function showDirView(dir) {
         content.appendChild(article);
     }
 }
+
+function showDirTree() {
+    let tree = document.getElementById('file-system').getElementsByClassName('tree')[0].getElementsByTagName('ul')[0];
+    tree.innerHTML = "<li><img src='./assets/images/plus.png' /><span full='/'>/</span></li>";
+}
+let tree_ul = document.getElementById('file-system').getElementsByClassName('tree')[0].getElementsByTagName('ul')[0];
+tree_ul.onclick = function (e) {
+    console.log(e.target.tagName);
+    if (e.target.tagName == 'IMG') {
+        let cpath = getWinCurrentPath();
+        console.log(cpath);
+        let li = e.target.parentNode;
+        console.log(li.lastChild.tagName);
+        if (li.lastChild.tagName == 'UL') {
+            li.removeChild(li.lastChild);
+            e.target.setAttribute('src', './assets/images/plus.png')
+            return;
+        }
+        e.target.setAttribute('src', './assets/images/min.png')
+        let newli = document.createElement('ul');
+        // let cpath = getWinCurrentPath();
+        let fpath = li.getElementsByTagName('span')[0].getAttribute('full');
+        setWinCurrentPath(fpath);
+        let diritems = fs.ls('');
+        setWinCurrentPath(cpath);
+        // newli.innerHTML = '<ul>';
+        for (let i = 0 ; i < diritems.length ; ++i) {
+            if (diritems[i].type == FILE_TYPE_DIR) {
+                if (fpath[fpath.length - 1] != '/')
+                    fpath += '/';
+                newli.innerHTML += "<li><img src='./assets/images/plus.png' /><span full='"+ fpath + diritems[i].name+ "'>" + diritems[i].name + "</span></li>";
+            }
+        }
+        // newli.innerHTML += '</ul>';
+        li.appendChild(newli);
+        
+    } else if (e.target.tagName == 'SPAN') {
+        let fpath = e.target.getAttribute('full');
+        setWinCurrentPath(fpath);
+        showDirView('');
+    }
+}
+tree_ul.onmouseover = function (e) {
+    let imgs = this.getElementsByTagName('img');
+    for(let i = 0 ; i < imgs.length ; ++i) {
+        imgs[i].style.opacity = 1;
+        
+    }
+}
+tree_ul.onmouseleave = function (e) {
+    let imgs = this.getElementsByTagName('img');
+    for(let i = 0 ; i < imgs.length ; ++i) {
+        imgs[i].style.opacity = 0;
+    }
+}
+
+
 
 //自动绘制fat表格
 function drawAFatTable() {

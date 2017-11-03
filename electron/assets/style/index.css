@@ -226,6 +226,33 @@ body {
     width: 25%;
     height: 100%;
     overflow: auto;
+    opacity: 1;
+}
+
+#file-system .tree ul{
+    list-style: none;
+    /* float: left; */
+    margin: 0;
+    padding: 8px;
+}
+
+#file-system .tree li {
+    background: url('../images/file.png') no-repeat;
+    background-size: 16px;
+    padding-left: 11px;
+}
+
+#file-system .tree span {
+    cursor: pointer;
+}
+
+#file-system .tree img {
+    position: relative;
+    width: 10px;
+    height: 10px;
+    left: -21px;
+    cursor: pointer;
+    opacity: 0;
 }
 
 #file-system .content {
@@ -237,6 +264,7 @@ body {
 }
 
 #file-system table {
+    display: none;
     width: 91%;
     margin: auto;
     text-align: center;
