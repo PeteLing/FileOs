@@ -5,6 +5,8 @@ const {Menu, MenuItem} = remote
 
 const FILE_TYPE_TXT = 0; //文件类型：txt文件
 const FILE_TYPE_DIR = 1;  //文件类型：子目录
+const FILE_FLAG_READ = 0
+const FILE_FLAG_WIRTE = 1;
 
 fs.createFile('test', 4);
 drawAFatTable();
@@ -40,6 +42,13 @@ function showDirView(dir) {
             article.setAttribute('type', 'txt');
             img = document.createElement('img');
             img.setAttribute('src', './assets/images/TXT.png');
+            article.setAttribute('length', ary[i].size)
+            let atr_bin = ary[i].attr.toString(2);
+            if (atr_bin[atr_bin.length - 1] == 1) {
+                article.setAttribute('readonly', 'yes');
+            } else {
+                article.setAttribute('readonly', 'no');
+            }
         }
         let p = document.createElement('p');
         p.innerText = ary[i].name;
@@ -286,6 +295,14 @@ for (let i = 0 ; i < closebts.length ; ++i) {
             fs.closeFile(document.getElementById('title').innerText);
             drawAOpenFileTable();
             updateBottomNav();
+        } else if (topNode.getAttribute('id') == 'attribute'){
+            let readonly = topNode.getElementsByClassName('read')[0].checked;
+            if (readonly) {
+                fs.setfileFlag(topNode.getElementsByClassName('name')[0].innerText, FILE_FLAG_READ)
+            } else {
+                fs.setfileFlag(topNode.getElementsByClassName('name')[0].innerText, FILE_FLAG_WIRTE)
+            }
+            closewindow(topNode);
         } else {
             closewindow(topNode);
         }
@@ -387,8 +404,9 @@ savebt.onclick = function () {
     let title = path.basename(abname);
     let buffer = document.getElementById('edit').getElementsByTagName('textarea')[0].value;
     setWinCurrentPath(path.dirname(abname));
-    fs.writeFile(title, buffer, 123);
+    fs.writeFile(title, buffer);
     setWinCurrentPath(cpath);
+    showDirView('');
     drawAFatTable();
 }
 
@@ -659,19 +677,30 @@ menuFileEdit.append(new MenuItem({
 menuFileEdit.append(new MenuItem({
     label: '删除',
     click() {
-        // console.log(myevent.target.parentElement.getAttribute('title'));
         fs.deleteFile(myevent.target.parentElement.getAttribute('title'));
         drawAFatTable();
         showDirView('');
-        // drawAOpenFileTable();
     }
 }));
-/* menuFileEdit.append(new MenuItem({
+menuFileEdit.append(new MenuItem({
     label: '属性',
     click() {
+        let attr_win = document.getElementById('attribute');
+        attr_win.style.display = 'block';
+        attr_win.click();
+        let name = myevent.target.parentElement.getAttribute('title');
+        let path = getWinCurrentPath();
+        let length = myevent.target.parentElement.getAttribute('length');
+        let readonly = myevent.target.parentElement.getAttribute('readonly');
+        attr_win.getElementsByClassName('name')[0].innerText = name;
+        attr_win.getElementsByClassName('path')[0].innerText = path;
+        attr_win.getElementsByClassName('length')[0].innerText = length + ' kb';
+        if (readonly == 'yes') {
+            attr_win.getElementsByClassName('read')[0].setAttribute('checked', '');
+        }
 
     }
-})); */
+}));
 
 /*文件夹的菜单*/
 const menuFolderEdit = new Menu();

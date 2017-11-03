@@ -156,7 +156,7 @@ module.exports.createFile = function(name, attr) {
     disk.setContent(freeBlocks[0], '');
 
     //登记到目录项
-    let file = new DirItem(name, FILE_TYPE_TXT, attr, freeBlocks[0], 0);
+    let file = new DirItem(name, FILE_TYPE_TXT, attr, freeBlocks[0], 1);
     diritems.push(file);
 
     //填写已打开文件表
@@ -167,6 +167,20 @@ module.exports.createFile = function(name, attr) {
     let oftle = openfile.createOFTLE(absoluteName, attr, freeBlocks[0], 0, FILE_FLAG_WIRTE);
     openfile.push(oftle); */
 
+    return true;
+}
+
+module.exports.setfileFlag = function(name, flag) {
+    let rst = checkItem(this.getCurrentPath(), name, FILE_TYPE_TXT);
+    if (rst.code != FILE_CHECK_EXIST) {
+        alert(rst.msg);
+        return false;
+    }
+    if (flag == FILE_FLAG_READ) {
+        rst.diritem.attr = 5;
+    } else if(flag == FILE_TYPE_DIR) {
+        rst.diritem.attr = 4;
+    }
     return true;
 }
 
@@ -240,7 +254,7 @@ module.exports.readFile = function(name, length) {
  * @param {*缓冲} buffer
  * @param {*写长度} length
  */
-module.exports.writeFile = function(name, buffer, length) {
+module.exports.writeFile = function(name, buffer) {
     let a = this.getCurrentPath();
     if (a[a.length - 1] != '/')
         a += '/';
@@ -250,13 +264,13 @@ module.exports.writeFile = function(name, buffer, length) {
             return false;
     }
     let oftle = openfile.getOFTLE(absoluteName);
-    // if (oftle.flag != FILE_FLAG_WIRTE) {
-    //     alert('不能以读方式写文件');
-    //     return false;
-    // }
+    if (oftle.attribute == 5) {
+        alert('此文件为只读');
+        return false;
+    }
     let byteLen = util.getByteLen(buffer);
     let size = Math.ceil(byteLen / BLOCK_SIZE)
-    if (size === 0) size=1;
+    if (size === 0) size = 1;
     let fileBlocks = fat.getFileBlocks(oftle.number);
     let freeBlocks = [];
     if (fileBlocks.length <= size) {
@@ -298,7 +312,7 @@ module.exports.copyFile = function (name, data) {
     }
     if (this.createFile(newname, 4) === false)
         return false;
-    if (this.writeFile(newname, data, 123) === false) {
+    if (this.writeFile(newname, data) === false) {
         this.closeFile(a + newname);
         this.deleteFile(newname);
         return false;
