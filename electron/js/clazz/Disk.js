@@ -12,22 +12,26 @@ class Disk {
         this.blocks = new Array(this.length);
     }
 
+    //取得第num号块的内容
     getContent (num) {
         return this.blocks[num];
     }
 
+    //对第num号块的写入内容
     setContent (num, buffer) {
         if (num < 1 || num >= this.length)
             return false;
         this.blocks[num] = buffer;
     }
 
+    //写入目录项到第num号块的目录
     setDir (num) {
         if (num < 1 || num >= this.length)
         return false;
         this.blocks[num] = [];
     }
 
+    //取出第num号块的所有目录项
     getDir (num) {
         if (num < 1 || num >= this.length)
         return false;

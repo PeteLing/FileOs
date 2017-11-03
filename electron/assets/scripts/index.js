@@ -91,12 +91,12 @@ document.getElementById('commandbt').onclick = function () {
 
 let tree_ul = document.getElementById('file-system').getElementsByClassName('tree')[0].getElementsByTagName('ul')[0];
 tree_ul.onclick = function (e) {
-    console.log(e.target.tagName);
+    // console.log(e.target.tagName);
     if (e.target.tagName == 'IMG') {
         let cpath = getWinCurrentPath();
-        console.log(cpath);
+        // console.log(cpath);
         let li = e.target.parentNode;
-        console.log(li.lastChild.tagName);
+        // console.log(li.lastChild.tagName);
         if (li.lastChild.tagName == 'UL') {
             li.removeChild(li.lastChild);
             e.target.setAttribute('src', './assets/images/plus.png')
@@ -167,7 +167,7 @@ function drawAOpenFileTable() {
 
 let tags = document.getElementById('tags');
 tags.onclick = function(e) {
-    console.log(e.target);
+    // console.log(e.target);
     let tables = document.getElementById('file-system').getElementsByTagName('table');
     let tree = document.getElementById('tree');
     if (e.target.getAttribute('class') == 1) {
@@ -419,7 +419,7 @@ function updateBottomNav() {
     for (let i = 0 ; i < openfiles.length ; ++i) {
         nav_ul.innerHTML += "<li ><img class='txt' title='" + openfiles[i].name + "' src='./assets/images/TXT.png' /></li> "
     }
-    console.log(openfiles);
+    // console.log(openfiles);
 }
 
 //文件或文件夹双击事件
@@ -524,7 +524,7 @@ leftbt.onclick = function () {
     let pre = currentpath.substr(0, index);
     if (pre == '')
         pre = '/';
-    console.log(pre, name);
+    // console.log(pre, name);
     setWinCurrentPath(pre);
     showDirView('');   
 }
@@ -555,7 +555,7 @@ function newFile() {
             if (inputs[0].value.length <= 0) {
                 content.removeChild(files[i]);
             } else {
-                console.log(files[i].getAttribute('type'));
+                // console.log(files[i].getAttribute('type'));
                 switch(files[i].getAttribute('type')) {
                     case 'dir' :
                         if (inputs[0].getAttribute('oldname')) {
@@ -733,9 +733,3 @@ menuFolderEdit.append(new MenuItem({
         // drawAOpenFileTable();
     }
 }));
-/* menuFolderEdit.append(new MenuItem({
-    label: '属性',
-    click() {
-
-    }
-})); */

@@ -186,16 +186,18 @@ module.exports.setfileFlag = function(name, flag) {
 }
 
 /**
- *
+ * 打开文件
  * @param {*文件名} name
  * @param {*操作类型：读/写} flag
  */
 module.exports.openFile = function(name, flag) {
+    //判断文件是否存在
     let rst = checkItem(this.getCurrentPath(), name, FILE_TYPE_TXT);
     if (rst.code != FILE_CHECK_EXIST) {
         alert(rst.msg);
         return false;
     }
+    //判断文件打开方式
     if (flag == FILE_FLAG_WIRTE) {
         let attr_bin = rst.diritem.attr.toString(2);
         if (attr_bin[attr_bin.length - 1] == 1) {
@@ -203,10 +205,12 @@ module.exports.openFile = function(name, flag) {
             return false;
         }
     }
+    //拼接绝对路径
     let oldpath = this.getCurrentPath();
     if(oldpath[oldpath.length - 1] != '/')
         oldpath += '/';
     let absoluteName = oldpath + name;
+    //在已打开文件表中查看是否已经打开，没有则登记到其中
     if (openfile.getOFTLE(absoluteName))
         return true;
     let oftle = openfile.createOFTLE(absoluteName, rst.diritem.attr, rst.diritem.begin_num, 1, flag);
@@ -219,15 +223,17 @@ module.exports.openFile = function(name, flag) {
 }
 
 /**
- *
+ * 读取文件
  * @param {*文件名} name
  * @param {*读取长度} length
  */
 module.exports.readFile = function(name, length) {
+    //拼接绝对路径
     let oldpath = this.getCurrentPath();
     if (oldpath[oldpath.length - 1] != '/')
         oldpath += '/';
     let absoluteName = oldpath + name;
+    //如果文件没有打开，则打开
     if (!openfile.getOFTLE(absoluteName)) {
         if(!this.openFile(name, FILE_FLAG_READ))
             return false;
@@ -239,6 +245,7 @@ module.exports.readFile = function(name, length) {
     //     alert('不能已写方式打开文件');
     //     return false;
     // }
+    //获取文件内容
     let fileblocks = fat.getFileBlocks(oftle.number);
     let content = '';
     for (let i = 0 ; i < fileblocks.length ; ++i) {
@@ -250,16 +257,18 @@ module.exports.readFile = function(name, length) {
 
 
 /**
- *
+ * 写入文件
  * @param {*文件名} name
  * @param {*缓冲} buffer
  * @param {*写长度} length
  */
 module.exports.writeFile = function(name, buffer) {
+    //拼接绝对路径
     let a = this.getCurrentPath();
     if (a[a.length - 1] != '/')
         a += '/';
     let absoluteName = a + name;
+    //如果文件没有打开，则打开此文件
     if (!openfile.getOFTLE(absoluteName)) {
         if(!this.openFile(name, FILE_FLAG_WIRTE))
             return false;
@@ -269,11 +278,13 @@ module.exports.writeFile = function(name, buffer) {
         alert('此文件为只读');
         return false;
     }
+    //计算文件长度，重新给文件申请盘块
     let byteLen = util.getByteLen(buffer);
     let size = Math.ceil(byteLen / BLOCK_SIZE)
     if (size === 0) size = 1;
+    //文件本身占用的盘块
     let fileBlocks = fat.getFileBlocks(oftle.number);
-    let freeBlocks = [];
+    let freeBlocks = [];  //新申请的盘块
     if (fileBlocks.length <= size) {
         freeBlocks = fat.getFreeBlocks(size - fileBlocks.length);
         if (freeBlocks.length < size - fileBlocks.length) {
@@ -287,7 +298,7 @@ module.exports.writeFile = function(name, buffer) {
     }
     let newBlocks = fileBlocks.concat(freeBlocks);
     newBlocks.push(-1);
-    let contentAry = util.sliceStr2Array(buffer, BLOCK_SIZE);
+    let contentAry = util.sliceStr2Array(buffer, BLOCK_SIZE); //将文件内容按盘块长度切割
     if (contentAry.length == 0) 
         contentAry.push(buffer);
     for (let i = 0 ; i < size ; ++i) {
@@ -302,6 +313,7 @@ module.exports.writeFile = function(name, buffer) {
     return true;
 }
 
+//复制文件
 module.exports.copyFile = function (name, data) {
     let basename = name + ' - 复件';
     let newname = basename;
@@ -352,11 +364,13 @@ module.exports.isOpen = function(name) {
 }
 
 module.exports.deleteFile = function(name) {
+    //判断文件是否存在
     let checkitem = checkItem(this.getCurrentPath(), name, FILE_TYPE_TXT);
     if (checkitem.code != FILE_CHECK_EXIST) {
         alert(checkitem.msg);
         return false;
     }
+    //拼接绝对路径
     let oldpath = this.getCurrentPath();
     if (oldpath[oldpath.length - 1] != '/')
         oldpath += '/';
@@ -374,6 +388,7 @@ module.exports.deleteFile = function(name) {
     return true;
 }
 
+//重命名文件名或目录
 module.exports.renameFile = function(oldname, newname, type) {
     if (newname.indexOf('/') != -1  || util.getByteLen(newname) > FILE_NAME_MAXLEN) {
         alert('名字非法');
@@ -381,16 +396,7 @@ module.exports.renameFile = function(oldname, newname, type) {
     }
     if (oldname == newname)
         return true;
-    let checkitem = checkItem(this.getCurrentPath(), oldname, type);
-    if (checkitem.code != FILE_CHECK_EXIST) {
-        alert(checkitem.msg);
-        return false;
-    }
-    let tcheckitem = checkItem(this.getCurrentPath(), newname, type);
-    if (tcheckitem.code == FILE_CHECK_EXIST) {
-        alert(tcheckitem.msg);
-        return false;
-    }
+    //判断文件是否打开
     let oldpath = this.getCurrentPath();
     if (oldpath[oldpath.length - 1] != '/')
         oldpath += '/';
@@ -400,7 +406,19 @@ module.exports.renameFile = function(oldname, newname, type) {
         alert('文件已经打开');
         return false;
     }
-    console.log(checkitem);
+    //判断文件是否存在
+    let checkitem = checkItem(this.getCurrentPath(), oldname, type);
+    if (checkitem.code != FILE_CHECK_EXIST) {
+        alert(checkitem.msg);
+        return false;
+    }
+    //判断新名字有没有重名
+    let tcheckitem = checkItem(this.getCurrentPath(), newname, type);
+    if (tcheckitem.code == FILE_CHECK_EXIST) {
+        alert(tcheckitem.msg);
+        return false;
+    }
+    //改名
     checkitem.diritem.name = newname;
     return true;
 }
@@ -430,13 +448,16 @@ module.exports.mkdir = function(name) {
     rstOfItem.diritems.push(diritem);
 }
 
+//获取目录内容
 module.exports.ls = function(name) {
+    //判断目录是否存在,如果存在，则返回此目录项
     let rstOfItem = checkItem(this.getCurrentPath(), name, FILE_TYPE_DIR);
     if (rstOfItem.code != FILE_CHECK_EXIST) {
         alert(rstOfItem.msg);
         return false;
     }
     let diritems = '';
+    //根据目录项找到此目录的盘块，取得内容
     if (name != '/' && name != '') 
         diritems = disk.getDir(rstOfItem.diritem.begin_num);
     else 
@@ -444,6 +465,7 @@ module.exports.ls = function(name) {
     return diritems;
 }
 
+//删除空目录
 module.exports.rd = function(name) {
     let rstOfItem = checkItem(this.getCurrentPath(), name, FILE_TYPE_DIR);
     if (rstOfItem.code != FILE_CHECK_EXIST) {

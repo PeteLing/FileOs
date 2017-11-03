@@ -18,8 +18,6 @@ class Fat {
 
     /**
      * 遍历Fat表，返回num个空闲块的序号数组
-     * @param value
-     * @returns {number}
      */
     getFreeBlocks (num) {
         let rst = [];
@@ -36,12 +34,14 @@ class Fat {
         return rst;
     }
 
+    //对blockIndex号块赋值
     setBlock(blockIndex, value){
         if (blockIndex < 1 || blockIndex >= this.length)
             return false;
         this.blocksArr[blockIndex] = value;
     }
 
+    //取出已知起始盘块的文件的所占所有盘块
     getFileBlocks (begin_num) {
         let index = begin_num;
         let rst = [begin_num];
@@ -64,6 +64,7 @@ class Fat {
         this.blocksArr[index] = 0;
     }
 
+    //取出所有盘块的使用情况
     getBlocks() {
         return this.blocksArr;
     }
