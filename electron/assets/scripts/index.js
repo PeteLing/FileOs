@@ -357,9 +357,15 @@ content.oncontextmenu = function (e) {
             e.preventDefault();
             menuCreate.popup(remote.getCurrentWindow());
         } else {
-        //文件或目录右键事件
-            e.preventDefault();
-            menuFileEdit.popup(remote.getCurrentWindow());
+            //文件右键事件
+            if (e.target.parentElement.getAttribute('type') == 'txt') {
+                e.preventDefault();
+                menuFileEdit.popup(remote.getCurrentWindow());
+            //目录右键事件
+            } else {
+                e.preventDefault();
+                menuFolderEdit.popup(remote.getCurrentWindow());
+            }
         }
     }, 50);
 }
@@ -436,8 +442,24 @@ function newFile() {
 
 }
 
+let theCopyFile = false;
 /*新建文件或文件夹的菜单*/
 const menuCreate = new Menu();
+menuCreate.append(new MenuItem({
+    label: '粘贴',
+    click() {
+        if (theCopyFile === false)
+            return;
+        let name = theCopyFile.name
+        let data = theCopyFile.data;
+        if (data === false)
+            return;
+        fs.copyFile(name, data);
+        showDirView('');
+        drawAFatTable();
+        drawAOpenFileTable();
+    }
+}));
 menuCreate.append(new MenuItem({
     label: '新建文件',
     click() {
@@ -480,6 +502,22 @@ menuFileEdit.append(new MenuItem({
     }
 }));
 menuFileEdit.append(new MenuItem({
+    label: '复制',
+    click() {
+        let name = myevent.target.parentElement.getAttribute('title');
+        if (fs.isOpen(name)===true)
+            return;
+        theCopyFile = {
+            name : name,
+            data : fs.readFile(name, 123)
+        }
+        let a = getWinCurrentPath();
+        if (a[a.length - 1] != '/')
+            a += '/';
+        fs.closeFile(a + name);
+    }
+}));
+menuFileEdit.append(new MenuItem({
     label: '重命名',
     click() {
         let node = myevent.target.parentElement;
@@ -495,17 +533,50 @@ menuFileEdit.append(new MenuItem({
     label: '删除',
     click() {
         // console.log(myevent.target.parentElement.getAttribute('title'));
-        if (myevent.target.parentElement.getAttribute('type') == 'txt') {
-            fs.deleteFile(myevent.target.parentElement.getAttribute('title'));
-        } else if(myevent.target.parentElement.getAttribute('type') == 'dir') {
-            fs.rd(myevent.target.parentElement.getAttribute('title'));
-        }
+        fs.deleteFile(myevent.target.parentElement.getAttribute('title'));
         drawAFatTable();
         showDirView('');
         // drawAOpenFileTable();
     }
 }));
 menuFileEdit.append(new MenuItem({
+    label: '属性',
+    click() {
+
+    }
+}));
+
+/*文件夹的菜单*/
+const menuFolderEdit = new Menu();
+menuFolderEdit.append(new MenuItem({
+    label: '打开',
+    click() {
+        document.getElementById('file-system').getElementsByClassName('content')[0].ondblclick(myevent);
+    }
+}));
+menuFolderEdit.append(new MenuItem({
+    label: '重命名',
+    click() {
+        let node = myevent.target.parentElement;
+        let input = document.createElement('input');
+        input.value = node.getElementsByTagName('p')[0].innerText;
+        input.setAttribute('oldname', input.value);
+        node.removeChild(node.getElementsByTagName('p')[0]);
+        node.appendChild(input);
+        input.focus();
+    }
+}));
+menuFolderEdit.append(new MenuItem({
+    label: '删除',
+    click() {
+        // console.log(myevent.target.parentElement.getAttribute('title'));
+            fs.rd(myevent.target.parentElement.getAttribute('title'));
+        drawAFatTable();
+        showDirView('');
+        // drawAOpenFileTable();
+    }
+}));
+menuFolderEdit.append(new MenuItem({
     label: '属性',
     click() {
 

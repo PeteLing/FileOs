@@ -162,6 +162,8 @@ module.exports.createFile = function(name, attr) {
     let absoluteName = aapath + name;
     let oftle = openfile.createOFTLE(absoluteName, attr, freeBlocks[0], 0, FILE_FLAG_WIRTE);
     openfile.push(oftle); */
+
+    return true;
 }
 
 /**
@@ -281,7 +283,10 @@ function sliceStr2Array(val, size) {
  * @param {*写长度} length
  */
 module.exports.writeFile = function(name, buffer, length) {
-    let absoluteName = this.getCurrentPath() + name;
+    let a = this.getCurrentPath();
+    if (a[a.length - 1] != '/')
+        a += '/';
+    let absoluteName = a + name;
     if (!openfile.getOFTLE(absoluteName)) {
         if(!this.openFile(name, FILE_FLAG_WIRTE))
             return false;
@@ -293,6 +298,7 @@ module.exports.writeFile = function(name, buffer, length) {
     // }
     let byteLen = getByteLen(buffer);
     let size = Math.ceil(byteLen / BLOCK_SIZE)
+    if (size === 0) size=1;
     let fileBlocks = fat.getFileBlocks(oftle.number);
     let freeBlocks = [];
     if (fileBlocks.length <= size) {
@@ -309,6 +315,8 @@ module.exports.writeFile = function(name, buffer, length) {
     let newBlocks = fileBlocks.concat(freeBlocks);
     newBlocks.push(-1);
     let contentAry = sliceStr2Array(buffer, BLOCK_SIZE);
+    if (contentAry.length == 0) 
+        contentAry.push(buffer);
     for (let i = 0 ; i < size ; ++i) {
         fat.setBlock(newBlocks[i], newBlocks[i + 1]);
         disk.setContent(newBlocks[i], contentAry[i]);
@@ -321,6 +329,25 @@ module.exports.writeFile = function(name, buffer, length) {
     return true;
 }
 
+module.exports.copyFile = function (name, data) {
+    let basename = name + ' - 复件';
+    let newname = basename;
+    let i = 1;
+    let checkitem = checkItem(this.getCurrentPath(), basename, FILE_TYPE_TXT);
+    while (checkitem.code == FILE_CHECK_EXIST) {
+        newname = basename + i++;
+        checkitem = checkItem(this.getCurrentPath(), newname, FILE_TYPE_TXT);
+    }
+    if (this.createFile(newname, 4) === false)
+        return false;
+    if (this.writeFile(newname, data, 123) === false)
+        return false;
+    let a = this.getCurrentPath();
+    if (a[a.length - 1] != '/')
+        a += '/';
+    return this.closeFile(a + newname);
+}
+
 module.exports.closeFile = function(name) {
     // let absoluteName = this.getCurrentPath() + name;
     let oftle = openfile.getOFTLE(name);
@@ -328,6 +355,24 @@ module.exports.closeFile = function(name) {
         return true;
     openfile.remove(oftle);
     return true;
+}
+
+module.exports.isOpen = function(name) {
+    let checkitem = checkItem(this.getCurrentPath(), name, FILE_TYPE_TXT);
+    if (checkitem.code != FILE_CHECK_EXIST) {
+        alert(checkitem.msg);
+        return true;
+    }
+    let oldpath = this.getCurrentPath();
+    if (oldpath[oldpath.length - 1] != '/')
+        oldpath += '/';
+    let absoluteName = oldpath + name;
+    let oftle = openfile.getOFTLE(absoluteName);
+    if (oftle != false) {
+        alert('文件已经打开');
+        return true;
+    }
+    return false;
 }
 
 module.exports.deleteFile = function(name) {

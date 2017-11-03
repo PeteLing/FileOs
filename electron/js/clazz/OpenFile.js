@@ -34,6 +34,7 @@ let openfile = function () {
     this.remove = function (oftle) {
         let index = this.OFTLE.indexOf(oftle);
         this.OFTLE.splice(index, 1);
+        this.length--;
         return true;
     }
 
