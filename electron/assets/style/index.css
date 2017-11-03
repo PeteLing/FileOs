@@ -255,6 +255,14 @@ body {
     opacity: 0;
 }
 
+#file-system .tree ul:hover img {
+    opacity: 1;
+}
+
+#file-system .tree:hover #tags {
+    opacity: 1;
+}
+
 #file-system .content {
     float: right;
     border-right: 1px solid lightgray;
@@ -264,10 +272,22 @@ body {
 }
 
 #file-system table {
+    margin-top: 5px;
     display: none;
     width: 91%;
     margin: auto;
     text-align: center;
+}
+#tags {
+    position: fixed;
+    width: 22%;
+    margin: auto;
+    text-align: center;
+    opacity: 0;
+}
+#tags span {
+    padding: 0 15px;
+    background: rgba(139, 134, 134, 0.5)
 }
 
 #fat td {

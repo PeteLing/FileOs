@@ -90,20 +90,6 @@ tree_ul.onclick = function (e) {
         showDirView('');
     }
 }
-tree_ul.onmouseover = function (e) {
-    let imgs = this.getElementsByTagName('img');
-    for(let i = 0 ; i < imgs.length ; ++i) {
-        imgs[i].style.opacity = 1;
-        
-    }
-}
-tree_ul.onmouseleave = function (e) {
-    let imgs = this.getElementsByTagName('img');
-    for(let i = 0 ; i < imgs.length ; ++i) {
-        imgs[i].style.opacity = 0;
-    }
-}
-
 
 
 //自动绘制fat表格
@@ -140,6 +126,22 @@ function drawAOpenFileTable() {
         "<td>" + openfiles[i].number + "</td>" +
         "<td>" + openfiles[i].flag + "</td>"
         table.appendChild(tr);
+    }
+}
+
+let tags = document.getElementById('tags');
+tags.onclick = function(e) {
+    console.log(e.target);
+    let tables = document.getElementById('file-system').getElementsByTagName('table');
+    let tree = document.getElementById('tree');
+    if (e.target.getAttribute('class') == 1) {
+        tables[0].style.display = 'none';
+        tables[1].style.display = 'none';
+        tree.style.display = 'block';
+    } else if (e.target.getAttribute('class') == 2) {
+        tables[0].style.display = 'table';
+        tables[1].style.display = 'table';
+        tree.style.display = 'none';
     }
 }
 
