@@ -137,7 +137,7 @@ module.exports.createFile = function(name, attr) {
     }
     //判断是否有有空闲
     let diritems = rstOfRegister.diritems;
-    if (diritems.length > 8) {
+    if (diritems.length >= 8) {
         alert('目录满啦！');
         return false;
     }
@@ -340,8 +340,11 @@ module.exports.copyFile = function (name, data) {
     }
     if (this.createFile(newname, 4) === false)
         return false;
-    if (this.writeFile(newname, data, 123) === false)
+    if (this.writeFile(newname, data, 123) === false) {
+        this.closeFile(a + newname);
+        this.deleteFile(newname);
         return false;
+    }
     let a = this.getCurrentPath();
     if (a[a.length - 1] != '/')
         a += '/';

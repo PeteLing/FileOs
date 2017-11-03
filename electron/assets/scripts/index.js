@@ -126,12 +126,16 @@ bottomNav.onclick = function (e) {
         //获取文件名
         let name = e.target.getAttribute('title');
         //获取文件内容
+        let cpath = getWinCurrentPath();
+        let dirnamme = path.dirname(name);
+        setWinCurrentPath(dirnamme);
         let val = fs.readFile(path.basename(name), 123);
         if (val === false) {
             console.log('读取文件失败');
             return;
         }
-        // drawAOpenFileTable();
+        setWinCurrentPath(cpath);
+        drawAOpenFileTable();
 
         //打开编辑窗口
         let editwin = document.getElementById('edit');
@@ -291,9 +295,13 @@ function keyDownQuery(e) {
 //写入文件的保存按钮
 var savebt = document.getElementById('save');
 savebt.onclick = function () {
-    let title = path.basename(document.getElementById('title').innerText);
+    let abname = document.getElementById('title').innerText;
+    let cpath = getWinCurrentPath();
+    let title = path.basename(abname);
     let buffer = document.getElementById('edit').getElementsByTagName('textarea')[0].value;
+    setWinCurrentPath(path.dirname(abname));
     fs.writeFile(title, buffer, 123);
+    setWinCurrentPath(cpath);
     drawAFatTable();
 }
 
