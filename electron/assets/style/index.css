@@ -27,6 +27,11 @@ body {
     cursor: pointer;
 }
 
+#nav img {
+    width: 32px;
+    height: 32px;
+}
+
 
 #win-menu {
     position: fixed;

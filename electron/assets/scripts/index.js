@@ -11,6 +11,7 @@ drawAFatTable();
 drawAOpenFileTable();
 setWinCurrentPath('/');
 showDirView('/');
+updateBottomNav();
 
 function setWinCurrentPath(path) {
     let pathviw = document.getElementById('path');
@@ -85,18 +86,6 @@ function drawAOpenFileTable() {
 }
 
 
-var winbt = document.getElementById('winbt');
-winbt.onclick = function () {
-    var win_menu = document.getElementById('win-menu');
-    if (win_menu.className == 'hidden') {
-        win_menu.setAttribute('class', null);
-        document.getElementsByClassName('warp')[0].style.display = 'block';
-    } else {
-        win_menu.setAttribute('class', 'hidden');
-        document.getElementsByClassName('warp')[0].style.display = 'none';
-    }
-}
-
 var warp = document.getElementsByClassName('warp')[0];
 warp.onclick = function () {
     var win_menu = document.getElementById('win-menu');
@@ -104,28 +93,55 @@ warp.onclick = function () {
     this.style.display = 'none';
 }
 
-var filebt = document.getElementById('filebt');
-filebt.onclick = function () {
-    var fs = document.getElementById('file-system');
-    if (fs.style.display == 'none') {
-        fs.click();
-        fs.style.display = 'block';
-    } else {
-        fs.style.display = 'none';
+var bottomNav = document.getElementById('nav');
+bottomNav.onclick = function (e) {
+    if (e.target.getAttribute('id') == 'winbt') {
+        var win_menu = document.getElementById('win-menu');
+        if (win_menu.className == 'hidden') {
+            win_menu.setAttribute('class', null);
+            document.getElementsByClassName('warp')[0].style.display = 'block';
+        } else {
+            win_menu.setAttribute('class', 'hidden');
+            document.getElementsByClassName('warp')[0].style.display = 'none';
+        }
+    } else if (e.target.getAttribute('id') == 'filebt') {
+        var fss = document.getElementById('file-system');
+        if (fss.style.display == 'none') {
+            fss.click();
+            fss.style.display = 'block';
+        } else {
+            fss.style.display = 'none';
+        }
+    } else if (e.target.getAttribute('id') == 'cmdbt') {
+        var cmd = document.getElementById('terminal');
+        if (cmd.style.display == 'none') {
+            cmd.click();
+            cmd.style.display = 'block';
+            let inputs = cmd.getElementsByTagName('input');
+            inputs[inputs.length - 1].focus();
+        } else {
+            cmd.style.display = 'none';
+        }
+    } else if(e.target.getAttribute('class') == 'txt'){
+        //获取文件名
+        let name = e.target.getAttribute('title');
+        //获取文件内容
+        let val = fs.readFile(path.basename(name), 123);
+        if (val === false) {
+            console.log('读取文件失败');
+            return;
+        }
+        // drawAOpenFileTable();
+
+        //打开编辑窗口
+        let editwin = document.getElementById('edit');
+        document.getElementById('title').innerText = name;
+        document.getElementsByTagName('textarea')[0].value = val;
+        editwin.style.display = 'block';
+        editwin.click();
     }
 }
-var cmdbt = document.getElementById('cmdbt');
-cmdbt.onclick = function() {
-    var cmd = document.getElementById('terminal');
-    if (cmd.style.display == 'none') {
-        cmd.click();
-        cmd.style.display = 'block';
-        let inputs = cmd.getElementsByTagName('input');
-        inputs[inputs.length - 1].focus();
-    } else {
-        cmd.style.display = 'none';
-    }
-}
+
 
 
 //最小化
@@ -137,11 +153,7 @@ for (let i = 0 ; i < minbts.length ; ++i) {
 }
 function min(obj) {
     // var obj = document.getElementById(id);
-    if (obj.style.display == 'none') {
-        obj.style.display = 'block';
-    } else {
-        obj.style.display = 'none';
-    }
+    closewindow(obj);
 }
 //最大化
 var maxbts = document.getElementsByClassName('maxbt');
@@ -182,6 +194,7 @@ for (let i = 0 ; i < closebts.length ; ++i) {
             closewindow(topNode);
             fs.closeFile(document.getElementById('title').innerText);
             drawAOpenFileTable();
+            updateBottomNav();
         } else {
             closewindow(topNode);
         }
@@ -284,6 +297,18 @@ savebt.onclick = function () {
     drawAFatTable();
 }
 
+function updateBottomNav() {
+    let nav_ul = document.getElementById('nav').getElementsByTagName('ul')[0];
+    nav_ul.innerHTML = "<li ><img id='winbt' src='./assets/images/win.png' /></li> " +
+    "<li ><img id='filebt' title='文件管理' src='./assets/images/file.png' /></li> " +
+    "<li ><img id='cmdbt' title='终端' src='./assets/images/terminal.png' /></li>"
+    let openfiles = fs.openfile.getAll();
+    for (let i = 0 ; i < openfiles.length ; ++i) {
+        nav_ul.innerHTML += "<li ><img class='txt' title='" + openfiles[i].name + "' src='./assets/images/TXT.png' /></li> "
+    }
+    console.log(openfiles);
+}
+
 //文件或文件夹双击事件
 let content = document.getElementById('file-system').getElementsByClassName('content')[0];
 content.ondblclick = function (e) {
@@ -317,11 +342,15 @@ content.ondblclick = function (e) {
         }
         drawAOpenFileTable();
 
+        //打开编辑窗口
         let editwin = document.getElementById('edit');
         document.getElementById('title').innerText = absoluteName;
         document.getElementsByTagName('textarea')[0].value = val;
         editwin.style.display = 'block';
         editwin.click();
+
+        //添加到底部任务栏
+        updateBottomNav();
     }
 }
 //文件或文件夹单击事件
@@ -432,6 +461,7 @@ function newFile() {
                             fs.createFile(inputs[0].value, 4);
                             drawAFatTable();
                             drawAOpenFileTable();
+                            updateBottomNav();
                         }
                         showDirView('');
                         break;
@@ -458,6 +488,7 @@ menuCreate.append(new MenuItem({
         showDirView('');
         drawAFatTable();
         drawAOpenFileTable();
+        updateBottomNav();
     }
 }));
 menuCreate.append(new MenuItem({
