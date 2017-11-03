@@ -25,6 +25,7 @@ const FILE_TYPE_TXT = 0; //文件类型：txt文件
 const FILE_TYPE_DIR = 1;  //文件类型：子目录
 const FILE_FLAG_READ = 0
 const FILE_FLAG_WIRTE = 1;
+const FILE_NAME_MAXLEN = 119;
 const FILE_CHECK_NOT_EXIST = 0;
 const FILE_CHECK_EXIST = 1;
 const FILE_CHECK_PARENT_NOT_EXIST = 2;
@@ -148,7 +149,7 @@ module.exports.createFile = function(name, attr) {
         alert('磁盘空间不足！');
         return false;
     }
-    if (name.indexOf('/') != -1) {
+    if (name.indexOf('/') != -1  || util.getByteLen(name) > FILE_NAME_MAXLEN) {
         alert('名字非法');
         return false;
     }
@@ -374,7 +375,7 @@ module.exports.deleteFile = function(name) {
 }
 
 module.exports.renameFile = function(oldname, newname, type) {
-    if (newname.indexOf('/') != -1) {
+    if (newname.indexOf('/') != -1  || util.getByteLen(newname) > FILE_NAME_MAXLEN) {
         alert('名字非法');
         return false;
     }
@@ -419,7 +420,7 @@ module.exports.mkdir = function(name) {
         alert('磁盘空间不足');
         return false;
     }
-    if (name.indexOf('/') !== -1) {
+    if (name.indexOf('/') !== -1 || util.getByteLen(name) > FILE_NAME_MAXLEN) {
         alert('名字非法');
         return false;
     }
