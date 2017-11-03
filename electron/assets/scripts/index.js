@@ -66,6 +66,20 @@ function showDirTree(cpath = '') {
     }
 }
 
+document.getElementById('shutdown').onclick = function () {
+    if (confirm('是否关机?')){
+        close();
+    }
+}
+
+document.getElementById('file-manager').onclick = function () {
+    document.getElementById('filebt').click();
+}
+
+document.getElementById('commandbt').onclick = function () {
+    document.getElementById('cmdbt').click();
+}
+
 let tree_ul = document.getElementById('file-system').getElementsByClassName('tree')[0].getElementsByTagName('ul')[0];
 tree_ul.onclick = function (e) {
     console.log(e.target.tagName);
@@ -652,12 +666,12 @@ menuFileEdit.append(new MenuItem({
         // drawAOpenFileTable();
     }
 }));
-menuFileEdit.append(new MenuItem({
+/* menuFileEdit.append(new MenuItem({
     label: '属性',
     click() {
 
     }
-}));
+})); */
 
 /*文件夹的菜单*/
 const menuFolderEdit = new Menu();
@@ -690,9 +704,9 @@ menuFolderEdit.append(new MenuItem({
         // drawAOpenFileTable();
     }
 }));
-menuFolderEdit.append(new MenuItem({
+/* menuFolderEdit.append(new MenuItem({
     label: '属性',
     click() {
 
     }
-}));
+})); */

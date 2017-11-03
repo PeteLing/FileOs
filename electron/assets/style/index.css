@@ -279,22 +279,28 @@ body {
     text-align: center;
 }
 #tags {
-    position: absolute;
-    width: 22%;
-    margin: auto;
+    position: relative;
+    width: 100%;
+    /* margin: auto; */
     text-align: center;
     opacity: 0;
-    bottom: 0;
+    top: calc(100% - 22px);
 }
 #tags span {
     padding: 0 15px;
-    background: rgba(139, 134, 134, 0.5);
-    border: 2px solid red;
-    border-radius: 25px;
+    background: rgba(139, 134, 134, 0.3);
+    border: 2px solid rgba(139, 134, 134, 0.3);
+    width: 50%;
+    border-radius: 5px;
 }
 
 #fat td {
     width: 12.5%;
+}
+
+#tree {
+    position: relative;
+    top: -19px;
 }
 
 #file-system .busy{

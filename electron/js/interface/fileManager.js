@@ -36,7 +36,7 @@ const Fat = require('../clazz/Fat');
 const OpenFile = require('../clazz/OpenFile');
 const Disk = require('../clazz/Disk');
 
-const getLength = require('../utils/stringBytes');
+const util = require('../utils/stringBytes');
 
 let disk = new Disk();
 let fat = new Fat();
@@ -148,6 +148,10 @@ module.exports.createFile = function(name, attr) {
         alert('磁盘空间不足！');
         return false;
     }
+    if (name.indexOf('/') != -1) {
+        alert('名字非法');
+        return false;
+    }
     fat.setBlock(freeBlocks[0], -1);
     disk.setContent(freeBlocks[0], '');
 
@@ -228,53 +232,7 @@ module.exports.readFile = function(name, length) {
     return content;
 }
 
-//返回val的字节长度
-function getByteLen(val) {
-    var len = 0;
-    for (var i = 0; i < val.length; i++) {
-        if (val[i].match(/[^\x00-\xff]/ig) != null) //全角或汉字
-            len += 2;
-        else
-            len += 1;
-    }
-    return len;
-}
-//（通过Buffer返回二进制数据的字节长度而不考虑各种编码）
-function getBytesLen(val){
-    return getLength(val);
-}
 
-//（通过Buffer返回二进制数据的字节长度而不考虑各种编码）
-function getBytesLen(val){
-    return getLength(val);
-}
-
-//返回val在规定字节长度max内的值
-function getByteVal(val, max) {
-    var returnValue = '';
-    var byteValLen = 0;
-    for (var i = 0; i < val.length; i++) {
-        if (val[i].match(/[^\x00-\xff]/ig) != null)
-            byteValLen += 2;
-        else
-            byteValLen += 1;
-        if (byteValLen > max)
-            break;
-        returnValue += val[i];
-    }
-    return returnValue;
-}
-
-function sliceStr2Array(val, size) {
-    let rst = [];
-    let temp = '';
-    while (val.length > 0) {
-        temp = getByteVal(val, size)
-        rst.push(temp);
-        val = val.substr(temp.length);
-    }
-    return rst;
-}
 
 /**
  *
@@ -296,7 +254,7 @@ module.exports.writeFile = function(name, buffer, length) {
     //     alert('不能以读方式写文件');
     //     return false;
     // }
-    let byteLen = getByteLen(buffer);
+    let byteLen = util.getByteLen(buffer);
     let size = Math.ceil(byteLen / BLOCK_SIZE)
     if (size === 0) size=1;
     let fileBlocks = fat.getFileBlocks(oftle.number);
@@ -314,7 +272,7 @@ module.exports.writeFile = function(name, buffer, length) {
     }
     let newBlocks = fileBlocks.concat(freeBlocks);
     newBlocks.push(-1);
-    let contentAry = sliceStr2Array(buffer, BLOCK_SIZE);
+    let contentAry = util.sliceStr2Array(buffer, BLOCK_SIZE);
     if (contentAry.length == 0) 
         contentAry.push(buffer);
     for (let i = 0 ; i < size ; ++i) {
@@ -402,6 +360,10 @@ module.exports.deleteFile = function(name) {
 }
 
 module.exports.renameFile = function(oldname, newname, type) {
+    if (newname.indexOf('/') != -1) {
+        alert('名字非法');
+        return false;
+    }
     if (oldname == newname)
         return true;
     let checkitem = checkItem(this.getCurrentPath(), oldname, type);
@@ -441,6 +403,10 @@ module.exports.mkdir = function(name) {
     let freeBlock = fat.getFreeBlocks(1);
     if (freeBlock.length < 1) {
         alert('磁盘空间不足');
+        return false;
+    }
+    if (name.indexOf('/') !== -1) {
+        alert('名字非法');
         return false;
     }
     fat.setBlock(freeBlock[0], -1);
